@@ -1,46 +1,34 @@
-# Manga OCR Documentation Index
+# Manga OCR Rust Documentation Index
 
-Welcome to the technical documentation for **Manga OCR** (`manga-ocr`). This repository contains the complete Python codebase for Manga OCR, an end-to-end optical character recognition system optimized for Japanese manga, as well as its synthetic data generation pipeline and model training scripts.
-
-> [!NOTE]
-> Although the working folder is named `manga-ocr-rust`, the project is written entirely in Python utilizing PyTorch, Hugging Face Transformers, OpenCV, Albumentations, and standard image processing libraries.
+Welcome to the technical documentation for **Manga OCR Rust** (`manga-ocr-rust`). This repository contains the zero-cost, multi-crate Rust workspace for high-performance optical character recognition of Japanese manga.
 
 ---
 
-## Architecture & System Overview
+## Workspace Architecture
 
-Manga OCR is designed to recognize multi-line Japanese text formatted vertically or horizontally directly from image crops (such as speech bubbles or panel text) in a single forward pass without requiring line-by-line bounding box segmentation.
-
-It utilizes the Hugging Face **Vision Encoder-Decoder** framework ([`VisionEncoderDecoderModel`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/ocr.py#L11-L12)):
-- **Vision Encoder**: Converts input image pixels into high-level visual representation feature vectors.
-- **Text Decoder**: Auto-regressively predicts Japanese character tokens conditioned on the encoder output.
+Manga OCR Rust is organized as a production-grade Cargo workspace:
 
 ```mermaid
-flowchart LR
-    A[Input Image / Path] --> B[PIL Image Load & Grayscale Conversion]
-    B --> C[ViTImageProcessor / Feature Extractor]
-    C --> D[VisionEncoderDecoderModel]
-    D --> E[Japanese BERT Tokenizer Decoding]
-    E --> F[Japanese Text Post-Processing]
-    F --> G[Recognized Text Output / Clipboard]
+flowchart TD
+    CLI["manga-ocr-cli (CLI Binary)"] --> CORE["manga-ocr-core (Domain Primitives)"]
+    RUNTIME["manga-ocr-runtime (Tokio/Axum Service)"] --> CORE
+    RUNTIME --> PDP["manga-ocr-pdp (PDP Evaluator)"]
+    ORT["manga-ocr-ort (ONNX C-Bindings Engine)"] --> CORE
+    PDP --> ORT
 ```
 
----
-
-## Key Features
-
-- **Multi-line Recognition**: Reads entire manga speech bubbles at once.
-- **Complex Typesetting Support**: Handles vertical text (`writing-mode: vertical-rl`), furigana reading annotations, and *tate-chū-yoko* (horizontal numbers/ASCII in vertical text).
-- **Flexible Deployment**: Supports CUDA, Apple Silicon MPS acceleration, and CPU fallback.
-- **Daemon Background Processing**: Scans system clipboard or target directories continuously for screenshots (e.g. from ShareX, Flameshot, or macOS screenshot tools) and outputs recognized text to the clipboard or a log file.
-- **Synthetic Data Generation Engine**: Employs headless Chromium (`html2image`) to render realistic synthetic Japanese manga text snippets with font styles, speech bubbles, and background art.
+- **`manga-ocr-core`**: Core domain types, `OcrEngine` trait, Japanese full-width post-processing.
+- **`manga-ocr-pdp`**: Polymorphic Decision Protocol panel evaluator & ACS consensus discounting.
+- **`manga-ocr-ort`**: C++ ONNX Runtime bindings (`ort`), tensor memory, greedy/beam decoding.
+- **`manga-ocr-cli`**: High-performance command-line binary (`manga-ocr`).
+- **`manga-ocr-runtime`**: Titan-style Reflective Runtime microservice (Tokio + Axum).
 
 ---
 
 ## Repository Documentation Map
 
-- [**Master Architecture & Systems Specification**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/MASTER_ARCHITECTURE_SPECIFICATION.md): Master technical specification unifying system evolution, Cargo workspace blueprints, PDP/IEPE doctrines, RRSA integration, theoretical solutions, and migration roadmap.
-- [**API & Microservice Reference**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/api.md): Detailed reference for `MangaOcr`, batch inference API, ONNX engine, FastAPI REST server, Docker containerization, and CLI daemon parameters.
+- [**Master TODO & Implementation Ledger**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/TODO.md): Full audit checklist tracking completed tasks and next phase implementation goals.
+- [**Master Architecture & Systems Specification**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/MASTER_ARCHITECTURE_SPECIFICATION.md): Canonical technical specification detailing crate contracts, traits, mathematical formulas, comparison matrices, and Gantt roadmap.
 - [**Architecture & Doctrine Synthesis**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/architecture_and_doctrine.md): Unifies Reflective Rust (RRSA), Polymorphic Decision Protocol (PDP), IEPE intent-evidence loops, Draft Smarter scoring/probabilities, and Titan production Rust runtime blueprints.
 - [**Reflective Rust Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/reflective_rust_integration.md): Deep dive into RRSA integration, zero-overhead PyO3 FFI, compile-time tensor shape checks, and CSG model self-description.
 - [**PDP Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/pdp_integration.md): Details Polymorphic Decision Protocol integration, ACS consensus discounting, Brier calibration, and invalidation triggers.
@@ -48,19 +36,15 @@ flowchart LR
 - [**Agent, Skill & Automation Methods**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/agent_and_skill_methods.md): Details agent orchestration, `.agents/skills` taxonomy, and `scripts/gen-llms.py` context compilation.
 - [**Reference MangaOCR Analysis & Learnings**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/reference_mangaocr_learnings.md): Analysis of PaddleOCR/TrOCR reference project, ~8MB model size target, and long-sequence attention bug mitigations.
 - [**Theoretical & Conceptual Solutions**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/conceptual_gaps_and_solutions.md): Deep-dive solutions for Furigana bracket syntax, Tate-chū-yoko, Sound Effect grammar bypass, ViT aspect-preserving patch resampling, attention entropy loop truncation, and panel hierarchy top-sorting.
-- [**Project Structure & Modules**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/structure.md): Detailed layout of package boundaries, development modules, asset organization, and CI workflows.
-- [**Synthetic Data Generator**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/synthetic_data.md): Architecture of the Chromium-based synthetic data renderer, furigana typesetting engine, and augmentation pipeline.
-- [**Model Training & Evaluation**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/training.md): Detailed walkthrough of the training pipeline, dataset mixture composition, metrics calculation, and hyperparameter configuration.
 - [**Page Processing Strategy**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/page_processing_strategy.md): Architecture map and strategies for full-page OCR, color cover handling, and cross-panel text bubbles.
-- [**Code Review & Audit Report**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/code_review.md): Deep-dive audit report highlighting architectural strengths, known gaps, code smells, test coverage gaps, and a prioritized refactoring roadmap.
+- [**Code Review & Audit Report**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/code_review.md): Deep-dive audit report highlighting architectural strengths, known gaps, code smells, test coverage gaps, and refactoring roadmap.
 
 ---
 
 ## Technology Stack
 
-- **Python**: 3.9+
-- **Deep Learning Framework**: [PyTorch](https://pytorch.org/), [Hugging Face Transformers](https://huggingface.co/docs/transformers/index)
-- **Computer Vision & Augmentation**: [OpenCV](https://opencv.org/), [Pillow](https://python-pillow.org/), [Albumentations](https://albumentations.ai/)
-- **Japanese Text Processing**: `fugashi`, `unidic_lite`, `jaconv`, `budou` (TinySegmenter)
-- **CLI & Monitoring**: `fire`, `loguru`, `pyperclip`, `wandb`
-- **Synthetic Rendering**: `html2image` (Headless Chromium), `fontTools`
+- **Language**: Rust (Edition 2024, MSRV 1.88)
+- **ONNX Runtime**: [`ort`](https://crates.io/crates/ort) v2.0.0 (C++ dynamic binding)
+- **Async Runtime & Web Service**: `tokio` v1.38, `axum` v0.7, `tower-http` v0.5
+- **CLI & Diagnostics**: `clap` v4.5, `tracing` v0.1, `tracing-subscriber` v0.3
+- **Data Primitives**: `serde`, `serde_json`, `image` v0.25, `thiserror`, `anyhow`
