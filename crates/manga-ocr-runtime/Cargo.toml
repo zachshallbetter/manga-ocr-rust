@@ -1,5 +1,5 @@
 [package]
-name = "manga-ocr-server"
+name = "manga-ocr-runtime"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,16 +7,23 @@ authors.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "manga-ocr-server"
+name = "manga-ocr-runtime"
 path = "src/main.rs"
 
 [dependencies]
 manga-ocr-core = { path = "../manga-ocr-core" }
+manga-ocr-pdp = { path = "../manga-ocr-pdp" }
 manga-ocr-ort = { path = "../manga-ocr-ort" }
 tokio.workspace = true
 axum.workspace = true
+tower-http.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 anyhow.workspace = true
+image.workspace = true
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+
