@@ -40,7 +40,7 @@ class MangaOcr:
 
         logger.info("OCR ready")
 
-    def __call__(self, img_or_path: Union[str, Path, Image.Image]) -> str:
+    def __call__(self, img_or_path: str | Path | Image.Image) -> str:
         if isinstance(img_or_path, (str, Path)):
             img = Image.open(img_or_path)
         elif isinstance(img_or_path, Image.Image):

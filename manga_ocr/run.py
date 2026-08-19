@@ -26,8 +26,8 @@ def are_images_identical(img1: Any, img2: Any) -> bool:
 
 def process_and_write_results(
     mocr: MangaOcr,
-    img_or_path: Union[str, Path, Image.Image],
-    write_to: Union[str, Path],
+    img_or_path: str | Path | Image.Image,
+    write_to: str | Path,
 ) -> None:
     t0 = time.time()
     text = mocr(img_or_path)
@@ -51,8 +51,8 @@ def get_path_key(path: Path) -> tuple[Path, float]:
 
 
 def run(
-    read_from: Union[str, Path] = "clipboard",
-    write_to: Union[str, Path] = "clipboard",
+    read_from: str | Path = "clipboard",
+    write_to: str | Path = "clipboard",
     pretrained_model_name_or_path: str = "kha-white/manga-ocr-base",
     force_cpu: bool = False,
     delay_secs: float = 0.1,

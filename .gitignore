@@ -138,3 +138,27 @@ dmypy.json
 cython_debug/
 
 .idea/
+
+# OS files
+.DS_Store
+._*
+Thumbs.db
+
+# IDE & Editor settings
+.vscode/
+.zed/
+
+# Local Environment Secrets
+.env.local
+.env.*.local
+
+# ML Training, WandB logs, & Model Checkpoints
+wandb/
+checkpoints/
+models/
+out/
+*.pt
+*.bin
+*.safetensors
+*.onnx
+

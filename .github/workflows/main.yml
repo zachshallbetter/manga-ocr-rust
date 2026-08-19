@@ -32,5 +32,8 @@ jobs:
           uv pip install -e ".[dev]"
           uv pip install "${{ matrix.transformers-version == 'transformers' && 'transformers' || format('transformers=={0}', matrix.transformers-version) }}"
 
-      - name: Test
+      - name: Lint with ruff
+        run: uv run ruff check .
+
+      - name: Test with pytest
         run: uv run pytest
