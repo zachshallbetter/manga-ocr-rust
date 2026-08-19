@@ -37,16 +37,15 @@ flowchart LR
 
 ---
 
-## Repository Map
+## Repository Documentation Map
 
-| Section | Description | Key Modules |
-| :--- | :--- | :--- |
-| **[API Reference](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/api.md)** | Public Python API and CLI reference | [`manga_ocr.MangaOcr`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/ocr.py#L14-L53), [`manga_ocr.run`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/run.py#L47-L137) |
-| **[Repository Structure](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/structure.md)** | File taxonomy, package layout, and dependencies | [`manga_ocr`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr), [`manga_ocr_dev`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev) |
-| **[Synthetic Data Generation](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/synthetic_data.md)** | Synthetic image rendering pipeline | [`SyntheticDataGenerator`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/synthetic_data_generator/generator.py#L15-L72), [`Renderer`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/synthetic_data_generator/renderer.py#L13-L25) |
-| **[Training Pipeline](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/training.md)** | Model setup, dataset mixing, and training loop | [`MangaDataset`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/dataset.py#L12-L103), [`get_model`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/get_model.py#L29-L71) |
-| **[Page Processing Strategy](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/page_processing_strategy.md)** | Full page, cover, and cross-panel text strategy | Two-stage detection + recognition map |
-| **[Code Review & Analysis](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/code_review.md)** | Comprehensive audit, technical debt, and recommendations | Architectural strengths, bugs, edge cases |
+- [**API & Microservice Reference**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/api.md): Detailed reference for `MangaOcr`, batch inference API, ONNX engine, FastAPI REST server, Docker containerization, and CLI daemon parameters.
+- [**Architecture & Doctrine Synthesis**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/architecture_and_doctrine.md): Unifies Reflective Rust (RRSA), Polymorphic Decision Protocol (PDP), IEPE intent-evidence loops, Draft Smarter scoring/probabilities, and Titan production Rust runtime blueprints.
+- [**Project Structure & Modules**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/structure.md): Detailed layout of package boundaries, development modules, asset organization, and CI workflows.
+- [**Synthetic Data Generator**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/synthetic_data.md): Architecture of the Chromium-based synthetic data renderer, furigana typesetting engine, and augmentation pipeline.
+- [**Model Training & Evaluation**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/training.md): Detailed walkthrough of the training pipeline, dataset mixture composition, metrics calculation, and hyperparameter configuration.
+- [**Page Processing Strategy**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/page_processing_strategy.md): Architecture map and strategies for full-page OCR, color cover handling, and cross-panel text bubbles.
+- [**Code Review & Audit Report**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/code_review.md): Deep-dive audit report highlighting architectural strengths, known gaps, code smells, test coverage gaps, and a prioritized refactoring roadmap.
 
 ---
 
