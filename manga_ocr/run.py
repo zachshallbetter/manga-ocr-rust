@@ -118,25 +118,63 @@ def run(
 
         logger.info(f"Reading from directory {read_from}")
 
-        old_paths = set()
-        for path in read_from.iterdir():
-            old_paths.add(get_path_key(path))
+        try:
+            from watchdog.events import FileCreatedEvent, FileSystemEventHandler
+            from watchdog.observers import Observer
 
-        while True:
+            class ImageFileHandler(FileSystemEventHandler):
+                def __init__(self, mocr_instance, target_write):
+                    self.mocr = mocr_instance
+                    self.write_to = target_write
+                    self.processed = set()
+
+                def on_created(self, event: FileCreatedEvent):
+                    if event.is_directory:
+                        return
+                    file_path = Path(event.src_path)
+                    if file_path.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp", ".bmp"):
+                        time.sleep(0.05)  # Allow file write to complete
+                        try:
+                            img = Image.open(file_path)
+                            img.load()
+                            process_and_write_results(self.mocr, img, self.write_to)
+                        except (UnidentifiedImageError, OSError) as err:
+                            logger.warning(f"Error while reading file {file_path}: {err}")
+
+            event_handler = ImageFileHandler(mocr, write_to)
+            observer = Observer()
+            observer.schedule(event_handler, str(read_from), recursive=False)
+            observer.start()
+            logger.info("Started native event-driven watchdog filesystem observer.")
+
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                observer.stop()
+            observer.join()
+
+        except ImportError:
+            logger.info("watchdog package not installed; using standard directory polling loop.")
+            old_paths = set()
             for path in read_from.iterdir():
-                path_key = get_path_key(path)
-                if path_key not in old_paths:
-                    old_paths.add(path_key)
+                old_paths.add(get_path_key(path))
 
-                    try:
-                        img = Image.open(path)
-                        img.load()
-                    except (UnidentifiedImageError, OSError) as e:
-                        logger.warning(f"Error while reading file {path}: {e}")
-                    else:
-                        process_and_write_results(mocr, img, write_to)
+            while True:
+                for path in read_from.iterdir():
+                    path_key = get_path_key(path)
+                    if path_key not in old_paths:
+                        old_paths.add(path_key)
 
-            time.sleep(delay_secs)
+                        try:
+                            img = Image.open(path)
+                            img.load()
+                        except (UnidentifiedImageError, OSError) as e:
+                            logger.warning(f"Error while reading file {path}: {e}")
+                        else:
+                            process_and_write_results(mocr, img, write_to)
+
+                time.sleep(delay_secs)
 
 
 if __name__ == "__main__":
