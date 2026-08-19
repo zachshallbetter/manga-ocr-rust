@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+
 import numpy as np
-from PIL import Image
 from loguru import logger
+from PIL import Image
 
 from manga_ocr.ocr import post_process
 
@@ -106,6 +106,7 @@ def export_to_onnx(
     Export a PyTorch MangaOcr model to ONNX format.
     """
     import torch
+
     from manga_ocr.ocr import MangaOcrModel
 
     out_path = Path(output_dir)

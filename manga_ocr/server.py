@@ -49,7 +49,7 @@ if HAS_FASTAPI:
 
     @app.post("/ocr", response_model=OCRResponse)
     async def run_ocr(
-        file: UploadFile | None = File(default=None),
+        file: UploadFile | None = File(default=None),  # noqa: B008
         payload: OCRBase64Request | None = None,
     ) -> dict[str, Any]:
         mocr = get_ocr_instance()
@@ -57,15 +57,13 @@ if HAS_FASTAPI:
         if file is not None:
             contents = await file.read()
             img = Image.open(io.BytesIO(contents))
-            return_confidence = True
         elif payload is not None:
             try:
-                header, encoded = payload.image.split(",", 1) if "," in payload.image else ("", payload.image)
+                _header, encoded = payload.image.split(",", 1) if "," in payload.image else ("", payload.image)
                 contents = base64.b64decode(encoded)
                 img = Image.open(io.BytesIO(contents))
-                return_confidence = payload.return_confidence
             except Exception as e:
-                raise HTTPException(status_code=400, detail=f"Invalid base64 image data: {e}")
+                raise HTTPException(status_code=400, detail=f"Invalid base64 image data: {e}") from e
         else:
             raise HTTPException(status_code=400, detail="Must provide either image file upload or JSON payload.")
 
@@ -73,7 +71,7 @@ if HAS_FASTAPI:
         return {"text": text, "confidence": confidence}
 
     @app.post("/ocr/batch", response_model=BatchOCRResponse)
-    async def run_ocr_batch(files: list[UploadFile] = File(...)) -> dict[str, Any]:
+    async def run_ocr_batch(files: list[UploadFile] = File(...)) -> dict[str, Any]:  # noqa: B008
         mocr = get_ocr_instance()
         images = []
 

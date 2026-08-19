@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 import time
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import fire
 import numpy as np
