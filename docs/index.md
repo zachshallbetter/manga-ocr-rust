@@ -39,6 +39,7 @@ flowchart LR
 
 ## Repository Documentation Map
 
+- [**Master Architecture & Systems Specification**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/MASTER_ARCHITECTURE_SPECIFICATION.md): Master technical specification unifying system evolution, Cargo workspace blueprints, PDP/IEPE doctrines, RRSA integration, theoretical solutions, and migration roadmap.
 - [**API & Microservice Reference**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/api.md): Detailed reference for `MangaOcr`, batch inference API, ONNX engine, FastAPI REST server, Docker containerization, and CLI daemon parameters.
 - [**Architecture & Doctrine Synthesis**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/architecture_and_doctrine.md): Unifies Reflective Rust (RRSA), Polymorphic Decision Protocol (PDP), IEPE intent-evidence loops, Draft Smarter scoring/probabilities, and Titan production Rust runtime blueprints.
 - [**Reflective Rust Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/reflective_rust_integration.md): Deep dive into RRSA integration, zero-overhead PyO3 FFI, compile-time tensor shape checks, and CSG model self-description.
