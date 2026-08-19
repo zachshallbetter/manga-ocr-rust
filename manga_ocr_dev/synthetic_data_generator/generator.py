@@ -5,8 +5,8 @@ import pandas as pd
 from manga_ocr_dev.env import ASSETS_PATH, FONTS_ROOT
 from manga_ocr_dev.synthetic_data_generator.renderer import Renderer
 from manga_ocr_dev.synthetic_data_generator.utils import (
-    get_font_meta,
     get_charsets,
+    get_font_meta,
     is_ascii,
     is_kanji,
 )

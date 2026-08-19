@@ -1,18 +1,22 @@
+from __future__ import annotations
+
 import re
 from pathlib import Path
+from typing import Union
 
 import jaconv
 import torch
-from PIL import Image
 from loguru import logger
-from transformers import ViTImageProcessor, AutoTokenizer, VisionEncoderDecoderModel, GenerationMixin
+from PIL import Image
+from transformers import AutoTokenizer, GenerationMixin, VisionEncoderDecoderModel, ViTImageProcessor
 
 
 class MangaOcrModel(VisionEncoderDecoderModel, GenerationMixin):
     pass
 
+
 class MangaOcr:
-    def __init__(self, pretrained_model_name_or_path="kha-white/manga-ocr-base", force_cpu=False):
+    def __init__(self, pretrained_model_name_or_path: str = "kha-white/manga-ocr-base", force_cpu: bool = False):
         logger.info(f"Loading OCR model from {pretrained_model_name_or_path}")
         self.processor = ViTImageProcessor.from_pretrained(pretrained_model_name_or_path)
         # explicit tokenizer_type works around transformers>=5.13 misdetecting the tokenizer class
@@ -36,8 +40,8 @@ class MangaOcr:
 
         logger.info("OCR ready")
 
-    def __call__(self, img_or_path):
-        if isinstance(img_or_path, str) or isinstance(img_or_path, Path):
+    def __call__(self, img_or_path: Union[str, Path, Image.Image]) -> str:
+        if isinstance(img_or_path, (str, Path)):
             img = Image.open(img_or_path)
         elif isinstance(img_or_path, Image.Image):
             img = img_or_path
@@ -52,12 +56,12 @@ class MangaOcr:
         x = post_process(x)
         return x
 
-    def _preprocess(self, img):
+    def _preprocess(self, img: Image.Image) -> torch.Tensor:
         pixel_values = self.processor(img, return_tensors="pt").pixel_values
         return pixel_values.squeeze()
 
 
-def post_process(text):
+def post_process(text: str) -> str:
     text = "".join(text.split())
     text = text.replace("…", "...")
     text = re.sub("[・.]{2,}", lambda x: (x.end() - x.start()) * ".", text)

@@ -6,7 +6,7 @@ import fire
 import pandas as pd
 from tqdm.contrib.concurrent import thread_map
 
-from manga_ocr_dev.env import FONTS_ROOT, DATA_SYNTHETIC_ROOT
+from manga_ocr_dev.env import DATA_SYNTHETIC_ROOT, FONTS_ROOT
 from manga_ocr_dev.synthetic_data_generator.generator import SyntheticDataGenerator
 
 generator = SyntheticDataGenerator()
@@ -14,11 +14,11 @@ generator = SyntheticDataGenerator()
 
 def f(args):
     try:
-        i, source, id_, text = args
+        _i, source, id_, text, out_dir = args
         filename = f"{id_}.jpg"
         img, text_gt, params = generator.process(text)
 
-        cv2.imwrite(str(OUT_DIR / filename), img)
+        cv2.imwrite(str(out_dir / filename), img)
 
         font_path = Path(params["font_path"]).relative_to(FONTS_ROOT)
         ret = source, id_, text_gt, params["vertical"], str(font_path)
@@ -48,11 +48,10 @@ def run(package=0, n_random=1000, n_limit=None, max_workers=16):
     lines = pd.concat([lines, random_lines], ignore_index=True)
     if n_limit:
         lines = lines.sample(n_limit)
-    args = [(i, *values) for i, values in enumerate(lines.values)]
 
-    global OUT_DIR
-    OUT_DIR = DATA_SYNTHETIC_ROOT / "img" / package
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = DATA_SYNTHETIC_ROOT / "img" / package
+    out_dir.mkdir(parents=True, exist_ok=True)
+    args = [(i, *values, out_dir) for i, values in enumerate(lines.values)]
 
     data = thread_map(f, args, max_workers=max_workers, desc=f"Processing package {package}")
 

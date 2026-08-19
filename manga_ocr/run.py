@@ -1,28 +1,34 @@
+from __future__ import annotations
+
 import sys
 import time
 from pathlib import Path
+from typing import Any, Union
 
 import fire
 import numpy as np
 import pyperclip
-from PIL import Image
-from PIL import UnidentifiedImageError
 from loguru import logger
+from PIL import Image, UnidentifiedImageError
 
 from manga_ocr import MangaOcr
 
 
-def are_images_identical(img1, img2):
+def are_images_identical(img1: Any, img2: Any) -> bool:
     if None in (img1, img2):
         return img1 == img2
 
     img1 = np.array(img1)
     img2 = np.array(img2)
 
-    return (img1.shape == img2.shape) and (img1 == img2).all()
+    return bool((img1.shape == img2.shape) and (img1 == img2).all())
 
 
-def process_and_write_results(mocr, img_or_path, write_to):
+def process_and_write_results(
+    mocr: MangaOcr,
+    img_or_path: Union[str, Path, Image.Image],
+    write_to: Union[str, Path],
+) -> None:
     t0 = time.time()
     text = mocr(img_or_path)
     t1 = time.time()
@@ -32,26 +38,26 @@ def process_and_write_results(mocr, img_or_path, write_to):
     if write_to == "clipboard":
         pyperclip.copy(text)
     else:
-        write_to = Path(write_to)
-        if write_to.suffix != ".txt":
+        write_to_path = Path(write_to)
+        if write_to_path.suffix != ".txt":
             raise ValueError('write_to must be either "clipboard" or a path to a text file')
 
-        with write_to.open("a", encoding="utf-8") as f:
+        with write_to_path.open("a", encoding="utf-8") as f:
             f.write(text + "\n")
 
 
-def get_path_key(path):
+def get_path_key(path: Path) -> tuple[Path, float]:
     return path, path.lstat().st_mtime
 
 
 def run(
-    read_from="clipboard",
-    write_to="clipboard",
-    pretrained_model_name_or_path="kha-white/manga-ocr-base",
-    force_cpu=False,
-    delay_secs=0.1,
-    verbose=False,
-):
+    read_from: Union[str, Path] = "clipboard",
+    write_to: Union[str, Path] = "clipboard",
+    pretrained_model_name_or_path: str = "kha-white/manga-ocr-base",
+    force_cpu: bool = False,
+    delay_secs: float = 0.1,
+    verbose: bool = False,
+) -> None:
     """
     Run OCR in the background, waiting for new images to appear either in system clipboard, or a directory.
     Recognized texts can be either saved to system clipboard, or appended to a text file.
@@ -72,9 +78,7 @@ def run(
 
         if os.environ.get("WAYLAND_DISPLAY"):
             # Check if the wl-clipboard package is installed
-            if os.system("which wl-copy > /dev/null") == 0:
-                pyperclip.set_clipboard("wl-clipboard")
-            else:
+            if os.system("which wl-copy > /dev/null") != 0:
                 msg = (
                     "Your session uses wayland and does not have wl-clipboard installed. "
                     "Install wl-clipboard for write in clipboard to work."
@@ -100,7 +104,7 @@ def run(
                     # Pillow error when clipboard contains text (Linux, X11)
                     pass
                 else:
-                    logger.warning("Error while reading from clipboard ({})".format(error))
+                    logger.warning(f"Error while reading from clipboard ({error})")
             else:
                 if isinstance(img, Image.Image) and not are_images_identical(img, old_img):
                     process_and_write_results(mocr, img, write_to)

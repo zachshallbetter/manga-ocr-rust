@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from manga_ocr_dev.env import MANGA109_ROOT, BACKGROUND_DIR
+from manga_ocr_dev.env import BACKGROUND_DIR, MANGA109_ROOT
 
 
 def find_rectangle(mask, y, x, aspect_ratio_range=(0.33, 3.0)):

@@ -1,10 +1,16 @@
 import numpy as np
-from datasets import load_metric
 
 
 class Metrics:
     def __init__(self, processor):
-        self.cer_metric = load_metric("cer")
+        try:
+            import evaluate
+
+            self.cer_metric = evaluate.load("cer")
+        except Exception:
+            from datasets import load_metric
+
+            self.cer_metric = load_metric("cer")
         self.processor = processor
 
     def compute_metrics(self, pred):

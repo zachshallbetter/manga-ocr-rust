@@ -1,5 +1,6 @@
-import pandas as pd
 import unicodedata
+
+import pandas as pd
 
 from manga_ocr_dev.env import ASSETS_PATH, FONTS_ROOT
 

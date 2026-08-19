@@ -1,8 +1,8 @@
-import PIL
 import numpy as np
 import pandas as pd
-from PIL import ImageDraw, ImageFont
+import PIL
 from fontTools.ttLib import TTFont
+from PIL import ImageDraw, ImageFont
 from tqdm.contrib.concurrent import process_map
 
 from manga_ocr_dev.env import ASSETS_PATH, FONTS_ROOT

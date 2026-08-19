@@ -1,12 +1,12 @@
 from transformers import (
     AutoConfig,
-    AutoModelForCausalLM,
-    AutoModel,
-    TrOCRProcessor,
-    VisionEncoderDecoderModel,
     AutoFeatureExtractor,
+    AutoModel,
+    AutoModelForCausalLM,
     AutoTokenizer,
+    TrOCRProcessor,
     VisionEncoderDecoderConfig,
+    VisionEncoderDecoderModel,
 )
 
 

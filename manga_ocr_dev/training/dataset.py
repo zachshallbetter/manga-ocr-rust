@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-from manga_ocr_dev.env import MANGA109_ROOT, DATA_SYNTHETIC_ROOT
+from manga_ocr_dev.env import DATA_SYNTHETIC_ROOT, MANGA109_ROOT
 
 
 class MangaDataset(Dataset):

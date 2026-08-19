@@ -184,8 +184,7 @@ def rounded_rectangle(src, top_left, bottom_right, radius=1, color=255, thicknes
     height = abs(bottom_right[1] - top_left[1])
     width = abs(bottom_right[0] - top_left[0])
 
-    if radius > 1:
-        radius = 1
+    radius = min(radius, 1)
 
     corner_radius = int(radius * (min(height, width) / 2))
 
