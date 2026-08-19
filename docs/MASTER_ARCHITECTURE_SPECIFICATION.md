@@ -11,6 +11,7 @@
 ## 0. Authority, Status Honesty & Invariants
 
 ### 0.1 Authority Hierarchy
+
 When specifications, Rust substrate code, generated bindings, database schemas, or AI outputs conflict, resolve in strict canonical order:
 
 $$\text{Master Specification} \longrightarrow \text{Domain Schemas / Contracts} \longrightarrow \text{Core Rust Substrate} \longrightarrow \text{PyO3 / API Adapters} \longrightarrow \text{Generated Artifacts}$$
@@ -18,6 +19,7 @@ $$\text{Master Specification} \longrightarrow \text{Domain Schemas / Contracts} 
 Code or generated artifacts **never** silently alter normative specifications or immutability invariants.
 
 ### 0.2 Epistemic Status Honesty
+
 All features, components, and benchmarks documented in this codebase must strictly observe the **Four-Tier Claim Taxonomy**:
 
 $$\text{Documented} \neq \text{Implemented} \neq \text{Tested} \neq \text{Empirically Validated}$$
@@ -321,7 +323,8 @@ To prevent infinite autoregressive repetition loops (e.g. `...あああああ`),
 
 $$H_k = -\sum_{v \in V} P_k(v) \log_2 P_k(v)$$
 
-#### Truncation Trigger Condition:
+#### Truncation Trigger Condition
+
 If the rolling average entropy falls below threshold $\bar{H}_{k-3:k} < 0.15$ and the token ID $w_k = w_{k-1} = w_{k-2}$, the decoder forces immediate sequence termination:
 
 $$\text{Action: } \text{Set } w_k = \langle\text{eos}\rangle \quad \text{and exit decode loop.}$$

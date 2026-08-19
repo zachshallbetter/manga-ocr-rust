@@ -1,0 +1,33 @@
+use clap::Parser;
+use manga_ocr_core::OcrEngine;
+use manga_ocr_ort::OrtEngine;
+use std::path::PathBuf;
+
+#[derive(Parser, Debug)]
+#[command(name = "manga-ocr", version, about = "High-performance Japanese Manga OCR CLI in Rust")]
+struct Cli {
+    /// Path to input image file
+    #[arg(short, long)]
+    image: PathBuf,
+
+    /// Force CPU execution
+    #[arg(long, default_value_t = false)]
+    force_cpu: bool,
+}
+
+fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+    let cli = Cli::parse();
+
+    tracing::info!("Loading image from {:?}", cli.image);
+    let img = image::open(&cli.image)?;
+
+    let engine = OrtEngine::new("kha-white/manga-ocr-base");
+    let result = engine.predict(&img)?;
+
+    println!("Recognized Text: {}", result.text);
+    println!("Confidence: {:.4}", result.confidence);
+    println!("Duration: {:.2} ms", result.metadata.duration_ms);
+
+    Ok(())
+}

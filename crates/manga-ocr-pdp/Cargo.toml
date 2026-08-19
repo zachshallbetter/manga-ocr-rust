@@ -1,0 +1,14 @@
+[package]
+name = "manga-ocr-pdp"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+manga-ocr-core = { path = "../manga-ocr-core" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+image.workspace = true
