@@ -45,6 +45,7 @@ flowchart LR
 | **[Repository Structure](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/structure.md)** | File taxonomy, package layout, and dependencies | [`manga_ocr`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr), [`manga_ocr_dev`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev) |
 | **[Synthetic Data Generation](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/synthetic_data.md)** | Synthetic image rendering pipeline | [`SyntheticDataGenerator`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/synthetic_data_generator/generator.py#L15-L72), [`Renderer`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/synthetic_data_generator/renderer.py#L13-L25) |
 | **[Training Pipeline](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/training.md)** | Model setup, dataset mixing, and training loop | [`MangaDataset`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/dataset.py#L12-L103), [`get_model`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/get_model.py#L29-L71) |
+| **[Page Processing Strategy](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/page_processing_strategy.md)** | Full page, cover, and cross-panel text strategy | Two-stage detection + recognition map |
 | **[Code Review & Analysis](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/code_review.md)** | Comprehensive audit, technical debt, and recommendations | Architectural strengths, bugs, edge cases |
 
 ---
