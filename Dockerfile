@@ -9,11 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY Cargo.toml ./
+COPY Cargo.toml Cargo.lock* ./
+COPY .cargo/ .cargo/
 COPY crates/ crates/
 
 # Build release binaries
-RUN cargo build --release --p manga-ocr-server
+RUN cargo build --release -p manga-ocr-runtime
 
 # Production Runtime Stage
 FROM debian:bookworm-slim
@@ -26,11 +27,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy compiled Rust server binary from builder stage
-COPY --from=builder /usr/src/app/target/release/manga-ocr-server /usr/local/bin/manga-ocr-server
+COPY --from=builder /usr/src/app/target/release/manga-ocr-runtime /usr/local/bin/manga-ocr-runtime
 
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+  CMD curl -f http://localhost:8000/v1/runtime/health || exit 1
 
-CMD ["manga-ocr-server"]
+CMD ["manga-ocr-runtime"]

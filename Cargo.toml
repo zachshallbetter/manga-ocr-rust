@@ -8,6 +8,13 @@ members = [
     "crates/manga-ocr-cli",
     "crates/manga-ocr-py",
 ]
+default-members = [
+    "crates/manga-ocr-core",
+    "crates/manga-ocr-pdp",
+    "crates/manga-ocr-ort",
+    "crates/manga-ocr-runtime",
+    "crates/manga-ocr-cli",
+]
 
 [workspace.package]
 version = "0.2.0"
