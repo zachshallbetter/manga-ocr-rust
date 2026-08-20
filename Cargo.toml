@@ -6,6 +6,7 @@ members = [
     "crates/manga-ocr-ort",
     "crates/manga-ocr-runtime",
     "crates/manga-ocr-cli",
+    "crates/manga-ocr-py",
 ]
 
 [workspace.package]
