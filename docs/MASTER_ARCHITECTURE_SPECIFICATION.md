@@ -1,4 +1,4 @@
-# Manga OCR Rust: Master Architecture & Systems Specification
+# Comic OCR Rust: Master Architecture & Systems Specification
 
 **Document Version:** `v1.0.0`  
 **Protocol Status:** `Normative Master Specification`  
@@ -35,7 +35,7 @@ When in doubt, state the weaker claim.
 
 ## 1. Executive Summary & Evolutionary Trajectory
 
-This document is the exhaustive master technical specification for **Manga OCR Rust** (`manga-ocr-rust`). It synthesizes our complete codebase review, python refactoring suite, feature implementations, governance doctrines (**PDP** & **IEPE**), production Rust runtime patterns (**Titan**), reflective systems architecture (**Reflective Rust - RRSA**), reference project benchmarks (**MangaOCR**), and theoretical solutions for Japanese and English comic typography, vision transformer attention mechanics, and panel graph layout sorting.
+This document is the exhaustive master technical specification for **Comic OCR Rust** (`comic-ocr-rust`). It synthesizes our complete codebase review, python refactoring suite, feature implementations, governance doctrines (**PDP** & **IEPE**), production Rust runtime patterns (**Titan**), reflective systems architecture (**Reflective Rust - RRSA**), reference project benchmarks (**ComicOCR**), and theoretical solutions for Japanese and English comic typography, vision transformer attention mechanics, and panel graph layout sorting.
 
 ### 1.0 Supported Formats & Content Domains
 
@@ -65,19 +65,19 @@ Baseline PyTorch Monolith (v0.1)        Intermediate Python ONNX (v0.2)         
 The Rust implementation is structured as a multi-crate workspace adhering to strict single-responsibility boundaries and zero-copy data passing:
 
 ```text
-manga-ocr-rust/
+comic-ocr-rust/
 ├── Cargo.toml                      # Workspace Root (Rust 2024 edition, MSRV 1.88)
 ├── crates/
-│   ├── manga-ocr-core/             # Zero-dependency domain types, tokenizers, post-processing, CER
-│   ├── manga-ocr-pdp/              # Polymorphic Decision Protocol engine, ACS discounting, Brier ledger
-│   ├── manga-ocr-ort/              # ONNX Runtime (ort) C-binding engine & memory management
-│   ├── manga-ocr-py/               # PyO3 zero-copy C-extension bindings for Python runtime
-│   └── manga-ocr-server/           # Async Tokio (v1) + Axum (v0.7) REST & gRPC microservice
+│   ├── comic-ocr-core/             # Zero-dependency domain types, tokenizers, post-processing, CER
+│   ├── comic-ocr-pdp/              # Polymorphic Decision Protocol engine, ACS discounting, Brier ledger
+│   ├── comic-ocr-ort/              # ONNX Runtime (ort) C-binding engine & memory management
+│   ├── comic-ocr-py/               # PyO3 zero-copy C-extension bindings for Python runtime
+│   └── comic-ocr-server/           # Async Tokio (v1) + Axum (v0.7) REST & gRPC microservice
 ```
 
-### 2.1 Crate Contract: `manga-ocr-core`
+### 2.1 Crate Contract: `comic-ocr-core`
 
-`manga-ocr-core` is a zero-dependency Rust crate providing domain primitives, string post-processing, character tokenization, and metric evaluation.
+`comic-ocr-core` is a zero-dependency Rust crate providing domain primitives, string post-processing, character tokenization, and metric evaluation.
 
 #### Core Trait Definition: `OcrEngine`
 
@@ -140,9 +140,9 @@ pub fn post_process(input: &str) -> String {
 
 ---
 
-### 2.2 Crate Contract: `manga-ocr-pdp`
+### 2.2 Crate Contract: `comic-ocr-pdp`
 
-`manga-ocr-pdp` implements the **Polymorphic Decision Protocol**, executing multi-engine panel evaluation, consensus discounting, and Brier score calibration.
+`comic-ocr-pdp` implements the **Polymorphic Decision Protocol**, executing multi-engine panel evaluation, consensus discounting, and Brier score calibration.
 
 #### Struct: `PanelEvaluator`
 
@@ -183,9 +183,9 @@ impl PanelEvaluator {
 
 ---
 
-### 2.3 Crate Contract: `manga-ocr-ort`
+### 2.3 Crate Contract: `comic-ocr-ort`
 
-`manga-ocr-ort` encapsulates C++ ONNX Runtime bindings (`ort` crate), managing tensor memory allocations, image resizing, and greedy/beam search token decoding loops.
+`comic-ocr-ort` encapsulates C++ ONNX Runtime bindings (`ort` crate), managing tensor memory allocations, image resizing, and greedy/beam search token decoding loops.
 
 #### ONNX Session Management
 
@@ -201,7 +201,7 @@ impl MangaOcrOrtsession {
     pub fn new(encoder_bytes: &[u8], decoder_bytes: &[u8]) -> Result<Self, OrtError> {
         let environment = Arc::new(
             ort::Environment::builder()
-                .with_name("manga-ocr")
+                .with_name("comic-ocr")
                 .with_log_level(ort::LoggingLevel::Warning)
                 .build()?,
         );
@@ -228,9 +228,9 @@ impl MangaOcrOrtsession {
 
 ---
 
-### 2.4 Crate Contract: `manga-ocr-py`
+### 2.4 Crate Contract: `comic-ocr-py`
 
-`manga-ocr-py` uses **PyO3** to expose the Rust inference engine directly to Python as a compiled C-extension module (`manga_ocr_rs`), providing zero-copy buffer passing via **Runtime Semantic Projection (RSP)**.
+`comic-ocr-py` uses **PyO3** to expose the Rust inference engine directly to Python as a compiled C-extension module (`comic_ocr_rs`), providing zero-copy buffer passing via **Runtime Semantic Projection (RSP)**.
 
 ```rust
 use pyo3::prelude::*;
@@ -270,9 +270,9 @@ impl PyMangaOcr {
 
 ---
 
-### 2.5 Crate Contract: `manga-ocr-server`
+### 2.5 Crate Contract: `comic-ocr-server`
 
-`manga-ocr-server` provides a high-throughput async microservice built on **Tokio** and **Axum**.
+`comic-ocr-server` provides a high-throughput async microservice built on **Tokio** and **Axum**.
 
 ```rust
 use axum::{routing::{get, post}, Router, Json, extract::Multipart};
@@ -284,7 +284,7 @@ pub async fn run_server(addr: SocketAddr) -> anyhow::Result<()> {
         .route("/ocr", post(ocr_handler))
         .route("/ocr/batch", post(ocr_batch_handler));
 
-    tracing::info!("Manga OCR Axum Server listening on {}", addr);
+    tracing::info!("Comic OCR Axum Server listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
@@ -437,9 +437,79 @@ flowchart TD
 
 ---
 
-## 4. Master Systems Comparison Matrix
+## 6. 4-Layer Scene Graph & Localization Solver Architecture
 
-| Performance / Engineering Dimension | Legacy PyTorch (`manga-ocr`) | Intermediate Python ONNX | Production Master (`manga-ocr-rust`) |
+A manga/comic page is structured as a small, hierarchical scene graph rather than a flat string inside a bounding box.
+
+```mermaid
+flowchart TD
+    DOC[MangaDocument / ComicDocument] --> VOL[Volume / Chapter Metadata]
+    VOL --> PAGE[MangaPage]
+    PAGE --> LAYER1[Layer 1: Page & Panel Topology]
+    PAGE --> LAYER2[Layer 2: Semantic Text Content]
+    PAGE --> LAYER3[Layer 3: Spatial & Typographic Presentation]
+    PAGE --> LAYER4[Layer 4: Rendering & Cleanup Metadata]
+    
+    LAYER1 --> BANDS[PanelBands & Panel Frames]
+    LAYER1 --> CONT[TextContainers & SafeAreas]
+    
+    LAYER2 --> SRC_TXT[Source Text & Tategaki Columns]
+    LAYER2 --> TRANS[Literal, Localized & DisplayText]
+    
+    LAYER3 --> DUAL_RECT[DualRect: px & Normalized Coordinates]
+    LAYER3 --> ENVELOPE[LayoutEnvelope: min / preferred / max / hard]
+    LAYER3 --> ART_PROT[ArtRegion: Protected Faces & Eyes]
+    
+    LAYER4 --> MASKS[MaskRegion: Solid Fill & Inpaint Masks]
+    LAYER4 --> LOCKS[ObjectLocks & Art Direction Overrides]
+```
+
+### 6.1 Four-Layer Separation of Concerns
+
+1. **Layer 1: Page Structure**: Defines `DocumentReadingModel` (`binding`, `pageDirection`), `PanelBand` horizontal tiers, `Panel` frames (`contentBounds`, `safeBounds`, `bleedBounds`), visible `TextContainer` geometry, safe usable text areas, and optical centers.
+2. **Layer 2: Semantic Text Content**: Preserves Japanese `vertical-rl` tategaki source columns independently from localized target lines (`horizontal-tb`). Separates literal translation, editorial localization, and final `displayText`.
+3. **Layer 3: Spatial & Typographic Presentation**: Dual coordinate representation (`px` source pixels + `normalized` $[0.0, 1.0]$ page coordinates). Specifies `LayoutEnvelope` numeric ranges (`min`, `preferred`, `max`, `hard`), `SpatialConstraints`, `ArtRegion` protected art avoidance (`character`, `face`, `eyes`), line layouts, and `TypographyEnvelope` bounds.
+4. **Layer 4: Rendering & Cleanup Metadata**: `MaskRegion` background cleanup modes (`solid-fill`, `texture-repair`, `inpaint`, `redraw`), layer z-indexes, manual art-direction `LayoutOverrides`, `ObjectLocks`, and validation issue tracking (`ValidationIssue`).
+
+---
+
+### 6.2 Dual Coordinate System
+
+Geometry is stored in both exact source pixels (`px`) and portable normalized page coordinates (`normalized` $[0.0, 1.0]$):
+
+$$X_{\text{norm}} = \frac{X_{\text{px}}}{\text{Width}_{\text{page}}}, \quad Y_{\text{norm}} = \frac{Y_{\text{px}}}{\text{Height}_{\text{page}}}$$
+
+This guarantees portability across different resolution scans, archival editions, web renderers, and mobile viewport viewports.
+
+---
+
+### 6.3 Spatial Bounds & Layout Envelope
+
+Text layout solvers evaluate placement against 4 spatial boundary levels:
+- **`preferred`**: Art-directed ideal placement.
+- **`min`**: Smallest usable region.
+- **`max`**: Largest region the text object may occupy without visual degradation.
+- **`hard`**: Absolute spatial boundary that must never be crossed.
+
+---
+
+### 6.4 Scene Compilation Pipeline
+
+```mermaid
+flowchart LR
+    AUTH[MangaDocument Authoring Graph] --> SOLVE[Layout & Collision Solver]
+    SOLVE --> VALID[Page Validation & Issue Flagging]
+    VALID --> COMP[Compiler Engine]
+    COMP --> RUNTIME[Compact LocalizedTextObject Payload]
+```
+
+The authoring scene graph (`MangaDocument`) is compiled into compact `LocalizedTextObject` payloads for high-throughput runtime renderers and interactive web readers without losing source evidence or art-direction locks.
+
+---
+
+## 7. Master Systems Comparison Matrix
+
+| Performance / Engineering Dimension | Legacy PyTorch (`comic-ocr`) | Intermediate Python ONNX | Production Master (`comic-ocr-rust`) |
 | :--- | :--- | :--- | :--- |
 | **Primary Language** | Python 3.9 | Python 3.11 | **Rust 2024 (`crates/`) + PyO3** |
 | **ML Runtime Engine** | PyTorch + Transformers | ONNX Runtime (`onnxruntime`) | **`ort` C-Bindings (<120 MB RAM)** |
@@ -459,7 +529,7 @@ flowchart TD
 
 ```mermaid
 gantt
-    title Manga OCR Rust Migration Execution Roadmap
+    title Comic OCR Rust Migration Execution Roadmap
     dateFormat  YYYY-MM-DD
     section Phase 1: Infrastructure & Refactoring
     Python Wayland & Threading Fixes     :done,    p1, 2026-08-15, 2026-08-18
@@ -471,10 +541,10 @@ gantt
     Theoretical Domain Solutions         :done,    r3, 2026-08-19, 2026-08-19
     Master Specification Consolidation   :done,    r4, 2026-08-19, 2026-08-19
     section Phase 3: Rust Engine Implementation
-    crates/manga-ocr-core Implementation :active,  m1, 2026-08-20, 2026-08-23
-    crates/manga-ocr-pdp Panel Engine    :         m2, 2026-08-23, 2026-08-25
-    crates/manga-ocr-ort ONNX Session    :         m3, 2026-08-25, 2026-08-28
-    crates/manga-ocr-py PyO3 Maturin     :         m4, 2026-08-28, 2026-08-30
-    crates/manga-ocr-server Axum Service :         m5, 2026-08-30, 2026-09-01
+    crates/comic-ocr-core Implementation :active,  m1, 2026-08-20, 2026-08-23
+    crates/comic-ocr-pdp Panel Engine    :         m2, 2026-08-23, 2026-08-25
+    crates/comic-ocr-ort ONNX Session    :         m3, 2026-08-25, 2026-08-28
+    crates/comic-ocr-py PyO3 Maturin     :         m4, 2026-08-28, 2026-08-30
+    crates/comic-ocr-server Axum Service :         m5, 2026-08-30, 2026-09-01
     IEPE Parity Gate Verification        :         m6, 2026-09-01, 2026-09-02
 ```

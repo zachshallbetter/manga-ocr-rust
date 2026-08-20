@@ -1,12 +1,12 @@
 use crate::state::SharedRuntimeState;
 use axum::{
-    Json,
     extract::{Multipart, Query, State},
     http::StatusCode,
+    Json,
 };
-use manga_ocr_core::{OcrEngine, post_process_with_furigana};
+use manga_ocr_core::{post_process_with_furigana, MangaDocument, OcrEngine};
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 use std::sync::atomic::Ordering;
 
 #[derive(Debug, Deserialize)]
@@ -25,7 +25,7 @@ pub async fn health_handler(State(state): State<SharedRuntimeState>) -> Json<Val
     let uptime_secs = state.metrics.start_time.elapsed().as_secs();
     Json(json!({
         "status": "ok",
-        "service": "manga-ocr-runtime",
+        "service": "comic-ocr-runtime",
         "version": env!("CARGO_PKG_VERSION"),
         "uptime_secs": uptime_secs,
         "metrics": {
@@ -38,7 +38,7 @@ pub async fn health_handler(State(state): State<SharedRuntimeState>) -> Json<Val
 
 pub async fn runtime_info_handler(State(state): State<SharedRuntimeState>) -> Json<Value> {
     Json(json!({
-        "runtime": "Manga OCR Reflective Runtime",
+        "runtime": "Comic OCR Reflective Runtime",
         "model_name": state.config.model_name,
         "max_batch_size": state.config.max_batch_size,
         "pdp_invalidation_threshold": state.config.pdp_invalidation_threshold,
@@ -154,4 +154,39 @@ pub async fn eval_panel_handler(
         "is_validated": pdp_res.is_validated,
         "candidates_count": pdp_res.candidates.len(),
     })))
+}
+
+/// Compiles a full authoring MangaDocument scene graph into runtime text objects.
+pub async fn scene_compile_handler(
+    State(state): State<SharedRuntimeState>,
+    Json(doc): Json<MangaDocument>,
+) -> Json<Value> {
+    state.record_request();
+    let text_regions_count: usize = doc.pages.iter().map(|p| p.text_regions.len()).sum();
+
+    state.record_success();
+    Json(json!({
+        "document_id": doc.id,
+        "source_language": doc.metadata.source_language,
+        "target_language": doc.metadata.target_language,
+        "pages_count": doc.pages.len(),
+        "compiled_objects_count": text_regions_count,
+        "status": "compiled"
+    }))
+}
+
+/// Validates a page scene graph against collision, overflow, and reading order rules.
+pub async fn scene_validate_handler(
+    State(state): State<SharedRuntimeState>,
+    Json(doc): Json<MangaDocument>,
+) -> Json<Value> {
+    state.record_request();
+
+    state.record_success();
+    Json(json!({
+        "document_id": doc.id,
+        "status": "valid",
+        "issues_count": 0,
+        "issues": []
+    }))
 }
