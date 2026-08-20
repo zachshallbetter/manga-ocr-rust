@@ -1,17 +1,17 @@
 use crate::state::SharedRuntimeState;
 use axum::{
-    extract::{Multipart, State},
+    extract::{Multipart, Query, State},
     http::StatusCode,
     Json,
 };
-use manga_ocr_core::OcrEngine;
+use manga_ocr_core::{post_process_with_furigana, OcrEngine};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::atomic::Ordering;
 
 #[derive(Debug, Deserialize)]
-pub struct Base64PredictRequest {
-    pub image: String,
+pub struct OcrQuery {
+    pub extract_furigana: Option<bool>,
 }
 
 #[derive(Debug, Serialize)]
@@ -19,11 +19,6 @@ pub struct PredictResponse {
     pub text: String,
     pub confidence: f32,
     pub duration_ms: f64,
-}
-
-#[derive(Debug, Serialize)]
-pub struct BatchPredictResponse {
-    pub results: Vec<PredictResponse>,
 }
 
 pub async fn health_handler(State(state): State<SharedRuntimeState>) -> Json<Value> {
@@ -55,9 +50,12 @@ pub async fn runtime_info_handler(State(state): State<SharedRuntimeState>) -> Js
 
 pub async fn predict_handler(
     State(state): State<SharedRuntimeState>,
+    Query(query): Query<OcrQuery>,
     mut multipart: Multipart,
 ) -> Result<Json<PredictResponse>, (StatusCode, String)> {
     state.record_request();
+
+    let extract_furigana = query.extract_furigana.unwrap_or(false);
 
     let mut image_bytes = None;
     while let Ok(Some(field)) = multipart.next_field().await {
@@ -79,10 +77,14 @@ pub async fn predict_handler(
         (StatusCode::BAD_REQUEST, format!("Invalid image format: {}", e))
     })?;
 
-    let result = state.engine.predict(&img).map_err(|e| {
+    let mut result = state.engine.predict(&img).map_err(|e| {
         state.record_failure();
         (StatusCode::INTERNAL_SERVER_ERROR, format!("OCR error: {}", e))
     })?;
+
+    if extract_furigana {
+        result.text = post_process_with_furigana(&result.text, true);
+    }
 
     state.record_success();
     Ok(Json(PredictResponse {
