@@ -28,6 +28,7 @@ flowchart TD
 ## Repository Documentation Map
 
 - [**Master TODO & Implementation Ledger**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/TODO.md): Full audit checklist tracking completed tasks and next phase implementation goals.
+- [**Key Findings, Domain Gaps & Forward Innovations**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/findings_gaps_and_ideas.md): Comprehensive synthesis of empirical research findings, domain challenges, and forward-looking architectural ideas.
 - [**Master Architecture & Systems Specification**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/MASTER_ARCHITECTURE_SPECIFICATION.md): Canonical technical specification detailing crate contracts, traits, mathematical formulas, comparison matrices, and Gantt roadmap.
 - [**Architecture & Doctrine Synthesis**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/architecture_and_doctrine.md): Unifies Reflective Rust (RRSA), Polymorphic Decision Protocol (PDP), IEPE intent-evidence loops, Draft Smarter scoring/probabilities, and Titan production Rust runtime blueprints.
 - [**Reflective Rust Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/reflective_rust_integration.md): Deep dive into RRSA integration, zero-overhead PyO3 FFI, compile-time tensor shape checks, and CSG model self-description.
