@@ -35,7 +35,14 @@ When in doubt, state the weaker claim.
 
 ## 1. Executive Summary & Evolutionary Trajectory
 
-This document is the exhaustive master technical specification for **Manga OCR Rust** (`manga-ocr-rust`). It synthesizes our complete codebase review, python refactoring suite, feature implementations, governance doctrines (**PDP** & **IEPE**), production Rust runtime patterns (**Titan**), reflective systems architecture (**Reflective Rust - RRSA**), reference project benchmarks (**MangaOCR**), and theoretical solutions for Japanese typography and vision transformer attention mechanics.
+This document is the exhaustive master technical specification for **Manga OCR Rust** (`manga-ocr-rust`). It synthesizes our complete codebase review, python refactoring suite, feature implementations, governance doctrines (**PDP** & **IEPE**), production Rust runtime patterns (**Titan**), reflective systems architecture (**Reflective Rust - RRSA**), reference project benchmarks (**MangaOCR**), and theoretical solutions for Japanese and English comic typography, vision transformer attention mechanics, and panel graph layout sorting.
+
+### 1.0 Supported Formats & Content Domains
+
+- **Japanese Manga & Manhua**: Vertical reading order (`vertical-rl`), horizontal text, Furigana reading extraction (`漢[かん]字[じ]`), Tate-chū-yoko patch rotation, and sound effect (*onomatopoeia*) LM bypass.
+- **Western Comics & Graphic Novels**: Horizontal reading order, English speech bubbles, ASCII punctuation normalization, contraction standardization, and clean formatting.
+- **Webtoons & Long-Strip Comics**: Aspect-preserving multi-tile sliding window resampling ($\delta = 0.20$ overlap) for tall vertical crops (aspect ratio $> 3:1$).
+- **Topological Panel Graph**: 2-Level topological reading order graph sorting speech bubbles Right-to-Left / Left-to-Right and Top-to-Bottom.
 
 ### 1.1 Architectural Evolution Matrix
 
