@@ -162,3 +162,7 @@ out/
 *.safetensors
 *.onnx
 
+# Allow .agents customization root
+!.agents/
+
+

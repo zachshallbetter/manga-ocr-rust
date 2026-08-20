@@ -72,5 +72,5 @@
 - [x] **Autoregressive Attention Loop Truncation (`manga-ocr-ort`)**: Implemented token entropy calculation $H_k$ and rolling entropy check ($\bar{H}_{k-3:k} < 0.15$) to terminate degenerate loops.
 - [x] **2-Level Topological Panel Graph (`manga-ocr-core`)**: Implemented `sort_bubble_reading_order` for Right-to-Left, Top-to-Bottom speech bubble sorting.
 - [ ] **PyO3 Zero-Copy Bindings (`manga-ocr-py`)**: Maturin C-extension module for compiling Rust engine to Python wheel.
-- [ ] **Context Corpus Compiler Script (`scripts/gen-llms.py`)**: Generate `.agents/llms.txt` and `.agents/llms-full.txt` context corpora.
+- [x] **Context Corpus Compiler Script (`scripts/gen-llms.py`)**: Generated `.agents/llms.txt` manifest and `.agents/llms-full.txt` (123KB single-file context corpus).
 - [ ] **IEPE Parity Verification Gate**: Execute automated parity test comparing Rust ONNX outputs against PyTorch baseline images (0% CER divergence).
