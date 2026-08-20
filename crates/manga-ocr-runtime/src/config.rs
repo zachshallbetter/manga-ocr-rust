@@ -21,7 +21,9 @@ impl Default for RuntimeConfig {
                 .unwrap_or(8000),
             model_name: std::env::var("MANGA_OCR_MODEL")
                 .unwrap_or_else(|_| "kha-white/manga-ocr-base".into()),
-            force_cpu: std::env::var("MANGA_OCR_FORCE_CPU").map(|v| v == "1" || v == "true").unwrap_or(false),
+            force_cpu: std::env::var("MANGA_OCR_FORCE_CPU")
+                .map(|v| v == "1" || v == "true")
+                .unwrap_or(false),
             max_batch_size: 16,
             pdp_invalidation_threshold: 0.70,
             log_level: std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),

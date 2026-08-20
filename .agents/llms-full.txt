@@ -2007,7 +2007,11 @@ use manga_ocr_ort::OrtEngine;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
-#[command(name = "manga-ocr", version, about = "High-performance Japanese Manga OCR CLI in Rust")]
+#[command(
+    name = "manga-ocr",
+    version,
+    about = "High-performance Japanese Manga OCR CLI in Rust"
+)]
 struct Cli {
     /// Path to input image file
     #[arg(short, long)]
@@ -2029,8 +2033,7 @@ fn main() -> anyhow::Result<()> {
     tracing::info!("Loading image from {:?}", cli.image);
     let img = image::open(&cli.image)?;
 
-    let engine = OrtEngine::new("kha-white/manga-ocr-base")
-        .with_furigana(cli.extract_furigana);
+    let engine = OrtEngine::new("kha-white/manga-ocr-base").with_furigana(cli.extract_furigana);
 
     let result = engine.predict(&img)?;
 
@@ -2051,10 +2054,8 @@ pub fn post_process_en(input: &str) -> String {
 
     // Standardize smart quotes and apostrophes
     normalized = normalized
-        .replace('’', "'")
-        .replace('‘', "'")
-        .replace('“', "\"")
-        .replace('”', "\"")
+        .replace(['’', '‘'], "'")
+        .replace(['“', '”'], "\"")
         .replace('…', "...");
 
     // Remove redundant spaces before punctuation marks
@@ -2062,12 +2063,8 @@ pub fn post_process_en(input: &str) -> String {
     let mut prev_char: Option<char> = None;
 
     for ch in normalized.chars() {
-        if ch == ' ' {
-            if let Some(prev) = prev_char {
-                if prev == ' ' {
-                    continue; // Skip consecutive spaces
-                }
-            }
+        if ch == ' ' && prev_char == Some(' ') {
+            continue; // Skip consecutive spaces
         }
         cleaned.push(ch);
         prev_char = Some(ch);
@@ -2208,7 +2205,11 @@ pub enum Language {
     English,
 }
 
-pub fn post_process_for_language(input: &str, language: Language, extract_furigana: bool) -> String {
+pub fn post_process_for_language(
+    input: &str,
+    language: Language,
+    extract_furigana: bool,
+) -> String {
     match language {
         Language::Japanese => post_process_jp(input, extract_furigana),
         Language::English => post_process_en(input),
@@ -2230,7 +2231,12 @@ pub struct BoundingBox {
 
 impl BoundingBox {
     pub fn new(x: u32, y: u32, width: u32, height: u32) -> Self {
-        Self { x, y, width, height }
+        Self {
+            x,
+            y,
+            width,
+            height,
+        }
     }
 }
 
@@ -2279,8 +2285,8 @@ pub mod post_process;
 pub mod resample;
 pub mod types;
 
-pub use languages::{post_process_en, post_process_for_language, post_process_jp, Language};
-pub use layout::{sort_bubble_reading_order, BoundingBox};
+pub use languages::{Language, post_process_en, post_process_for_language, post_process_jp};
+pub use layout::{BoundingBox, sort_bubble_reading_order};
 pub use post_process::{post_process, post_process_with_furigana};
 pub use resample::resample_tiles;
 pub use types::*;
@@ -2558,7 +2564,9 @@ pub trait OcrEngine: Send + Sync {
 
 --- RUST SOURCE: crates/manga-ocr-ort/src/lib.rs ---
 
-use manga_ocr_core::{post_process_with_furigana, EngineType, OcrEngine, OcrError, OcrMetadata, OcrResult};
+use manga_ocr_core::{
+    EngineType, OcrEngine, OcrError, OcrMetadata, OcrResult, post_process_with_furigana,
+};
 
 pub struct OrtEngine {
     pub model_name: String,
@@ -2621,7 +2629,11 @@ impl OcrEngine for OrtEngine {
             confidence: 0.985,
             token_probabilities: vec![0.98, 0.99],
             metadata: OcrMetadata {
-                duration_ms: if self.engine_type == EngineType::NanoMobileNet { 1.8 } else { 4.2 },
+                duration_ms: if self.engine_type == EngineType::NanoMobileNet {
+                    1.8
+                } else {
+                    4.2
+                },
                 model_name: self.model_name.clone(),
                 engine_type: self.engine_type,
             },
@@ -2697,7 +2709,9 @@ impl PanelEvaluator {
 
     pub fn evaluate(&self, image: &image::DynamicImage) -> Result<PdpDecision, PdpError> {
         if self.engines.is_empty() {
-            return Err(PdpError::EvaluationError("No OCR engines registered in panel".into()));
+            return Err(PdpError::EvaluationError(
+                "No OCR engines registered in panel".into(),
+            ));
         }
 
         let mut candidates = Vec::with_capacity(self.engines.len());
@@ -2708,11 +2722,17 @@ impl PanelEvaluator {
         }
 
         if candidates.is_empty() {
-            return Err(PdpError::EvaluationError("All panel engines failed prediction".into()));
+            return Err(PdpError::EvaluationError(
+                "All panel engines failed prediction".into(),
+            ));
         }
 
         // ACS Discounting & Selection: Select candidate with highest confidence
-        candidates.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap_or(std::cmp::Ordering::Equal));
+        candidates.sort_by(|a, b| {
+            b.confidence
+                .partial_cmp(&a.confidence)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         let best = candidates[0].clone();
         let is_validated = best.confidence >= self.invalidation_threshold;
 
@@ -2751,7 +2771,9 @@ impl Default for RuntimeConfig {
                 .unwrap_or(8000),
             model_name: std::env::var("MANGA_OCR_MODEL")
                 .unwrap_or_else(|_| "kha-white/manga-ocr-base".into()),
-            force_cpu: std::env::var("MANGA_OCR_FORCE_CPU").map(|v| v == "1" || v == "true").unwrap_or(false),
+            force_cpu: std::env::var("MANGA_OCR_FORCE_CPU")
+                .map(|v| v == "1" || v == "true")
+                .unwrap_or(false),
             max_batch_size: 16,
             pdp_invalidation_threshold: 0.70,
             log_level: std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
@@ -2764,13 +2786,13 @@ impl Default for RuntimeConfig {
 
 use crate::state::SharedRuntimeState;
 use axum::{
+    Json,
     extract::{Multipart, Query, State},
     http::StatusCode,
-    Json,
 };
-use manga_ocr_core::{post_process_with_furigana, OcrEngine};
+use manga_ocr_core::{OcrEngine, post_process_with_furigana};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::sync::atomic::Ordering;
 
 #[derive(Debug, Deserialize)]
@@ -2823,11 +2845,16 @@ pub async fn predict_handler(
 
     let mut image_bytes = None;
     while let Ok(Some(field)) = multipart.next_field().await {
-        if field.name() == Some("image") || field.name() == Some("file") {
-            if let Ok(bytes) = field.bytes().await {
-                image_bytes = Some(bytes);
-                break;
-            }
+        if matches!(field.name(), Some("image") | Some("file")) {
+            let bytes = field.bytes().await.map_err(|e| {
+                state.record_failure();
+                (
+                    StatusCode::BAD_REQUEST,
+                    format!("Error reading payload field: {}", e),
+                )
+            })?;
+            image_bytes = Some(bytes);
+            break;
         }
     }
 
@@ -2838,12 +2865,18 @@ pub async fn predict_handler(
 
     let img = image::load_from_memory(&bytes).map_err(|e| {
         state.record_failure();
-        (StatusCode::BAD_REQUEST, format!("Invalid image format: {}", e))
+        (
+            StatusCode::BAD_REQUEST,
+            format!("Invalid image format: {}", e),
+        )
     })?;
 
     let mut result = state.engine.predict(&img).map_err(|e| {
         state.record_failure();
-        (StatusCode::INTERNAL_SERVER_ERROR, format!("OCR error: {}", e))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("OCR error: {}", e),
+        )
     })?;
 
     if extract_furigana {
@@ -2866,11 +2899,16 @@ pub async fn eval_panel_handler(
 
     let mut image_bytes = None;
     while let Ok(Some(field)) = multipart.next_field().await {
-        if field.name() == Some("image") || field.name() == Some("file") {
-            if let Ok(bytes) = field.bytes().await {
-                image_bytes = Some(bytes);
-                break;
-            }
+        if matches!(field.name(), Some("image") | Some("file")) {
+            let bytes = field.bytes().await.map_err(|e| {
+                state.record_failure();
+                (
+                    StatusCode::BAD_REQUEST,
+                    format!("Error reading payload field: {}", e),
+                )
+            })?;
+            image_bytes = Some(bytes);
+            break;
         }
     }
 
@@ -2881,12 +2919,18 @@ pub async fn eval_panel_handler(
 
     let img = image::load_from_memory(&bytes).map_err(|e| {
         state.record_failure();
-        (StatusCode::BAD_REQUEST, format!("Invalid image format: {}", e))
+        (
+            StatusCode::BAD_REQUEST,
+            format!("Invalid image format: {}", e),
+        )
     })?;
 
     let pdp_res = state.pdp_evaluator.evaluate(&img).map_err(|e| {
         state.record_failure();
-        (StatusCode::INTERNAL_SERVER_ERROR, format!("PDP panel error: {}", e))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("PDP panel error: {}", e),
+        )
     })?;
 
     state.record_success();
@@ -2958,7 +3002,6 @@ mod tests {
 }
 
 
-
 --- RUST SOURCE: crates/manga-ocr-runtime/src/main.rs ---
 
 use manga_ocr_runtime::{config::RuntimeConfig, create_router, state::RuntimeState};
@@ -2972,12 +3015,18 @@ async fn main() -> anyhow::Result<()> {
     let config = RuntimeConfig::default();
 
     tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| config.log_level.as_str().into()))
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| config.log_level.as_str().into()),
+        )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
     tracing::info!("===========================================================");
-    tracing::info!("MANGA OCR REFLECTIVE RUNTIME v{}", env!("CARGO_PKG_VERSION"));
+    tracing::info!(
+        "MANGA OCR REFLECTIVE RUNTIME v{}",
+        env!("CARGO_PKG_VERSION")
+    );
     tracing::info!("Model: {}", config.model_name);
     tracing::info!("PDP Threshold: {}", config.pdp_invalidation_threshold);
     tracing::info!("Max Batch Size: {}", config.max_batch_size);
@@ -3029,8 +3078,8 @@ async fn shutdown_signal() {
 use crate::handlers::{eval_panel_handler, health_handler, predict_handler, runtime_info_handler};
 use crate::state::SharedRuntimeState;
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
@@ -3061,8 +3110,8 @@ pub fn create_router(state: SharedRuntimeState) -> Router {
 use crate::config::RuntimeConfig;
 use manga_ocr_ort::OrtEngine;
 use manga_ocr_pdp::PanelEvaluator;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
 pub struct RuntimeMetrics {
@@ -3107,10 +3156,14 @@ impl RuntimeState {
     }
 
     pub fn record_success(&self) {
-        self.metrics.total_successful_ocr.fetch_add(1, Ordering::Relaxed);
+        self.metrics
+            .total_successful_ocr
+            .fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn record_failure(&self) {
-        self.metrics.total_failed_ocr.fetch_add(1, Ordering::Relaxed);
+        self.metrics
+            .total_failed_ocr
+            .fetch_add(1, Ordering::Relaxed);
     }
 }

@@ -4,7 +4,11 @@ use manga_ocr_ort::OrtEngine;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
-#[command(name = "manga-ocr", version, about = "High-performance Japanese Manga OCR CLI in Rust")]
+#[command(
+    name = "manga-ocr",
+    version,
+    about = "High-performance Japanese Manga OCR CLI in Rust"
+)]
 struct Cli {
     /// Path to input image file
     #[arg(short, long)]
@@ -26,8 +30,7 @@ fn main() -> anyhow::Result<()> {
     tracing::info!("Loading image from {:?}", cli.image);
     let img = image::open(&cli.image)?;
 
-    let engine = OrtEngine::new("kha-white/manga-ocr-base")
-        .with_furigana(cli.extract_furigana);
+    let engine = OrtEngine::new("kha-white/manga-ocr-base").with_furigana(cli.extract_furigana);
 
     let result = engine.predict(&img)?;
 

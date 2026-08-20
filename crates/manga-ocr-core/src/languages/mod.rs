@@ -13,7 +13,11 @@ pub enum Language {
     English,
 }
 
-pub fn post_process_for_language(input: &str, language: Language, extract_furigana: bool) -> String {
+pub fn post_process_for_language(
+    input: &str,
+    language: Language,
+    extract_furigana: bool,
+) -> String {
     match language {
         Language::Japanese => post_process_jp(input, extract_furigana),
         Language::English => post_process_en(input),

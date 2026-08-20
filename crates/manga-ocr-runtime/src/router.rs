@@ -1,8 +1,8 @@
 use crate::handlers::{eval_panel_handler, health_handler, predict_handler, runtime_info_handler};
 use crate::state::SharedRuntimeState;
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;

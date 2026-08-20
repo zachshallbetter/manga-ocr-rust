@@ -1,4 +1,6 @@
-use manga_ocr_core::{post_process_with_furigana, EngineType, OcrEngine, OcrError, OcrMetadata, OcrResult};
+use manga_ocr_core::{
+    EngineType, OcrEngine, OcrError, OcrMetadata, OcrResult, post_process_with_furigana,
+};
 
 pub struct OrtEngine {
     pub model_name: String,
@@ -61,7 +63,11 @@ impl OcrEngine for OrtEngine {
             confidence: 0.985,
             token_probabilities: vec![0.98, 0.99],
             metadata: OcrMetadata {
-                duration_ms: if self.engine_type == EngineType::NanoMobileNet { 1.8 } else { 4.2 },
+                duration_ms: if self.engine_type == EngineType::NanoMobileNet {
+                    1.8
+                } else {
+                    4.2
+                },
                 model_name: self.model_name.clone(),
                 engine_type: self.engine_type,
             },

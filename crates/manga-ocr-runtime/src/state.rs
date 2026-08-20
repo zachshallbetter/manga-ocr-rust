@@ -1,8 +1,8 @@
 use crate::config::RuntimeConfig;
 use manga_ocr_ort::OrtEngine;
 use manga_ocr_pdp::PanelEvaluator;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
 pub struct RuntimeMetrics {
@@ -47,10 +47,14 @@ impl RuntimeState {
     }
 
     pub fn record_success(&self) {
-        self.metrics.total_successful_ocr.fetch_add(1, Ordering::Relaxed);
+        self.metrics
+            .total_successful_ocr
+            .fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn record_failure(&self) {
-        self.metrics.total_failed_ocr.fetch_add(1, Ordering::Relaxed);
+        self.metrics
+            .total_failed_ocr
+            .fetch_add(1, Ordering::Relaxed);
     }
 }

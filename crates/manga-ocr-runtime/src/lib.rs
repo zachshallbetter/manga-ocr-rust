@@ -53,4 +53,3 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
     }
 }
-

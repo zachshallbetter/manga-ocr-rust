@@ -5,10 +5,8 @@ pub fn post_process_en(input: &str) -> String {
 
     // Standardize smart quotes and apostrophes
     normalized = normalized
-        .replace('’', "'")
-        .replace('‘', "'")
-        .replace('“', "\"")
-        .replace('”', "\"")
+        .replace(['’', '‘'], "'")
+        .replace(['“', '”'], "\"")
         .replace('…', "...");
 
     // Remove redundant spaces before punctuation marks
@@ -16,12 +14,8 @@ pub fn post_process_en(input: &str) -> String {
     let mut prev_char: Option<char> = None;
 
     for ch in normalized.chars() {
-        if ch == ' ' {
-            if let Some(prev) = prev_char {
-                if prev == ' ' {
-                    continue; // Skip consecutive spaces
-                }
-            }
+        if ch == ' ' && prev_char == Some(' ') {
+            continue; // Skip consecutive spaces
         }
         cleaned.push(ch);
         prev_char = Some(ch);

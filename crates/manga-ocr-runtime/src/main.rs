@@ -9,12 +9,18 @@ async fn main() -> anyhow::Result<()> {
     let config = RuntimeConfig::default();
 
     tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| config.log_level.as_str().into()))
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| config.log_level.as_str().into()),
+        )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
     tracing::info!("===========================================================");
-    tracing::info!("MANGA OCR REFLECTIVE RUNTIME v{}", env!("CARGO_PKG_VERSION"));
+    tracing::info!(
+        "MANGA OCR REFLECTIVE RUNTIME v{}",
+        env!("CARGO_PKG_VERSION")
+    );
     tracing::info!("Model: {}", config.model_name);
     tracing::info!("PDP Threshold: {}", config.pdp_invalidation_threshold);
     tracing::info!("Max Batch Size: {}", config.max_batch_size);

@@ -33,7 +33,9 @@ impl PanelEvaluator {
 
     pub fn evaluate(&self, image: &image::DynamicImage) -> Result<PdpDecision, PdpError> {
         if self.engines.is_empty() {
-            return Err(PdpError::EvaluationError("No OCR engines registered in panel".into()));
+            return Err(PdpError::EvaluationError(
+                "No OCR engines registered in panel".into(),
+            ));
         }
 
         let mut candidates = Vec::with_capacity(self.engines.len());
@@ -44,11 +46,17 @@ impl PanelEvaluator {
         }
 
         if candidates.is_empty() {
-            return Err(PdpError::EvaluationError("All panel engines failed prediction".into()));
+            return Err(PdpError::EvaluationError(
+                "All panel engines failed prediction".into(),
+            ));
         }
 
         // ACS Discounting & Selection: Select candidate with highest confidence
-        candidates.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap_or(std::cmp::Ordering::Equal));
+        candidates.sort_by(|a, b| {
+            b.confidence
+                .partial_cmp(&a.confidence)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         let best = candidates[0].clone();
         let is_validated = best.confidence >= self.invalidation_threshold;
 
