@@ -1,126 +1,271 @@
-# Manga OCR API & Microservice Reference
+# Manga OCR Rust: API & Schema Specification
 
-This document provides a comprehensive reference for the public Python API, Batch Prediction API, ONNX Runtime Engine, FastAPI REST Microservice, and CLI of `manga-ocr`.
-
----
-
-## Python Core API
-
-### `manga_ocr.MangaOcr`
-
-The primary inference class located in [`manga_ocr/ocr.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/ocr.py#L18).
-
-#### Constructor
-
-```python
-MangaOcr(
-    pretrained_model_name_or_path="kha-white/manga-ocr-base",
-    force_cpu=False
-)
-```
-
-##### Parameters
-- `pretrained_model_name_or_path` (*str*, optional): Hugging Face Hub model ID or local directory path. Default: `"kha-white/manga-ocr-base"`.
-- `force_cpu` (*bool*, optional): Forces CPU execution even if CUDA or Apple Silicon MPS acceleration is available. Default: `False`.
-
-#### Single Image Invocation (`__call__`)
-
-```python
-__call__(
-    img_or_path: str | Path | Image.Image,
-    return_confidence: bool = False,
-    return_dict: bool = False
-) -> str | tuple[str, float] | dict[str, Any]
-```
-
-##### Parameters
-- `img_or_path`: Target image file path or PIL `Image` object.
-- `return_confidence` (*bool*, optional): If `True`, returns `(text, confidence_score)`.
-- `return_dict` (*bool*, optional): If `True`, returns `{"text": text, "confidence": score}`.
-
-##### Returns
-- `str` (default): Recognized Japanese text string.
-- `dict`: Formatted dict when `return_dict=True`.
+This document provides the canonical specification for the library traits, data schemas, REST API endpoints, CLI parameters, and container contracts of **Manga OCR Rust**.
 
 ---
 
-### Batch Inference API: `predict_batch`
+## 1. Rust Core Library API (`manga-ocr-core`)
 
-```python
-predict_batch(
-    imgs_or_paths: list[str | Path | Image.Image],
-    batch_size: int = 16,
-    return_confidence: bool = False
-) -> list[str] | list[dict[str, Any]]
+Located in [`crates/manga-ocr-core`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-core).
+
+### `OcrEngine` Trait Definition
+
+```rust
+pub trait OcrEngine: Send + Sync {
+    fn predict(&self, image: &image::DynamicImage) -> Result<OcrResult, OcrError>;
+    fn predict_batch(
+        &self,
+        images: &[image::DynamicImage],
+        batch_size: usize,
+    ) -> Result<Vec<OcrResult>, OcrError>;
+}
 ```
 
-Executes matrix batch inference across multiple image crops in parallel, optimizing GPU/MPS throughput.
+### Data Schemas
 
----
+#### `OcrResult` (Rust Struct & JSON Schema)
 
-### ONNX Runtime Engine: `manga_ocr.MangaOcrOnnx`
-
-Located in [`manga_ocr/onnx_engine.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/onnx_engine.py).
-
-```python
-from manga_ocr import MangaOcrOnnx, export_to_onnx
-
-# 1. Export PyTorch model to ONNX weights
-encoder_path, decoder_path = export_to_onnx(output_dir="models/onnx")
-
-# 2. Run lightweight ONNX Runtime engine (<200MB RAM, fast CPU/MPS startup)
-onnx_mocr = MangaOcrOnnx(encoder_path=encoder_path, decoder_path=decoder_path)
-text = onnx_mocr("path/to/img.jpg")
+```rust
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OcrResult {
+    pub text: String,
+    pub confidence: f32,
+    pub token_probabilities: Vec<f32>,
+    pub metadata: OcrMetadata,
+}
 ```
 
----
+**JSON Schema Representation**:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OcrResult",
+  "type": "object",
+  "properties": {
+    "text": { "type": "string", "description": "Recognized & normalized Japanese text" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Geometric mean sequence confidence score" },
+    "token_probabilities": {
+      "type": "array",
+      "items": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+      "description": "Autoregressive token probability sequence"
+    },
+    "metadata": { "$ref": "#/$defs/OcrMetadata" }
+  },
+  "required": ["text", "confidence", "token_probabilities", "metadata"]
+}
+```
 
-### Page Processing Pipeline: `manga_ocr.MangaPagePipeline`
+#### `OcrMetadata` & `EngineType`
 
-Located in [`manga_ocr/pipeline.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/pipeline.py).
+```rust
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum EngineType {
+    BaseInt8Onnx,
+    NanoMobileNet,
+    Fallback,
+}
 
-```python
-from manga_ocr import MangaPagePipeline
-
-pipeline = MangaPagePipeline()
-# process_page accepts a custom bounding-box text detector
-page_regions = pipeline.process_page("cover.jpg", text_detector=my_detector, return_confidence=True)
-# Returns list of dicts: [{"box": (x,y,w,h), "text": "...", "confidence": 0.98}, ...]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OcrMetadata {
+    pub duration_ms: f64,
+    pub model_name: String,
+    pub engine_type: EngineType,
+}
 ```
 
 ---
 
-## FastAPI REST Microservice (`manga_ocr.server`)
+### Japanese Post-Processing Algorithm (`post_process`)
 
-Exposes a production REST API server located in [`manga_ocr/server.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr/server.py).
+The `post_process(input: &str) -> String` function cleans OCR output tokens:
 
-### Endpoints
+1. **Ellipsis Normalization**: Replaces variants `…` with `...` (or full-width `．．．`).
+2. **ASCII Full-Width Conversion (jaconv h2z)**: Converts printable ASCII range `!` (`0x21`) through `~` (`0x7E`) to Japanese full-width Unicode characters (`0xFF01` through `0xFF5E`).
+3. **Space Conversion**: Converts half-width space `' '` (`0x20`) to Japanese full-width ideographic space `'　'` (`0x3000`).
 
-| Method | Endpoint | Payload | Response | Description |
+```rust
+use manga_ocr_core::post_process;
+
+assert_eq!(post_process("…"), "．．．");
+assert_eq!(post_process("テスト 123"), "テスト　１２３");
+```
+
+---
+
+## 2. Polymorphic Decision Protocol API (`manga-ocr-pdp`)
+
+Located in [`crates/manga-ocr-pdp`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-pdp).
+
+### `PanelEvaluator` Struct
+
+```rust
+pub struct PanelEvaluator {
+    engines: Vec<Box<dyn OcrEngine>>,
+    invalidation_threshold: f32,
+}
+
+impl PanelEvaluator {
+    pub fn new(engines: Vec<Box<dyn OcrEngine>>, invalidation_threshold: f32) -> Self;
+    pub fn evaluate(&self, image: &image::DynamicImage) -> Result<PdpDecision, PdpError>;
+}
+```
+
+### `PdpDecision` Schema
+
+```rust
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PdpDecision {
+    pub selected_text: String,
+    pub confidence: f32,
+    pub is_validated: bool,
+    pub candidates: Vec<OcrResult>,
+}
+```
+
+---
+
+## 3. Reflective Runtime Service REST API (`manga-ocr-runtime`)
+
+Located in [`crates/manga-ocr-runtime`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-runtime).
+
+### Environment Configuration Schema (`RuntimeConfig`)
+
+| Environment Variable | Default Value | Description |
+| :--- | :--- | :--- |
+| `MANGA_OCR_HOST` | `"0.0.0.0"` | Network bind address |
+| `MANGA_OCR_PORT` | `8000` | HTTP TCP listening port |
+| `MANGA_OCR_MODEL` | `"kha-white/manga-ocr-base"` | Target ONNX model identifier |
+| `MANGA_OCR_FORCE_CPU` | `false` | Force CPU execution provider |
+| `RUST_LOG` | `"info"` | Tracing log level (`debug`, `info`, `warn`) |
+
+---
+
+### REST API Endpoints Table
+
+| Method | Endpoint | Payload | HTTP Status | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/health` | None | `{"status": "ok"}` | Microservice healthcheck. |
-| `POST` | `/ocr` | Image upload (`file`) OR Base64 JSON payload | `{"text": "...", "confidence": 0.985}` | Single image OCR transcription. |
-| `POST` | `/ocr/batch` | Multipart image files (`files`) | `{"results": [{"text": "...", "confidence": 0.98}]}` | Batched multi-image OCR transcription. |
+| `GET` | `/v1/runtime/health` | None | `200 OK` | Telemetry request counters & uptime |
+| `GET` | `/v1/runtime/info` | None | `200 OK` | Reflective CSG model & platform metadata |
+| `POST` | `/v1/ocr/predict` | Multipart (`image` or `file`) | `200 OK`, `400 Bad Request` | Single crop image OCR prediction |
+| `POST` | `/v1/ocr/eval_panel` | Multipart (`image` or `file`) | `200 OK`, `400 Bad Request` | PDP multi-engine candidate selection |
 
-### Launching Microservice Server
+---
 
+### Endpoint Payloads & Examples
+
+#### 1. `GET /v1/runtime/health`
+
+**cURL Request**:
 ```bash
-python -m manga_ocr.server --port=8000
+curl -s http://localhost:8000/v1/runtime/health
 ```
 
-### Docker Container Deployment
+**JSON Response Payload**:
+```json
+{
+  "service": "manga-ocr-runtime",
+  "status": "ok",
+  "version": "0.2.0",
+  "uptime_secs": 42,
+  "metrics": {
+    "total_requests": 15,
+    "total_successful": 15,
+    "total_failed": 0
+  }
+}
+```
 
+#### 2. `GET /v1/runtime/info`
+
+**cURL Request**:
 ```bash
-docker build -t manga-ocr:latest .
-docker run -p 8000:8000 manga-ocr:latest
+curl -s http://localhost:8000/v1/runtime/info
+```
+
+**JSON Response Payload**:
+```json
+{
+  "runtime": "Manga OCR Reflective Runtime",
+  "model_name": "kha-white/manga-ocr-base",
+  "max_batch_size": 16,
+  "pdp_invalidation_threshold": 0.7,
+  "force_cpu": false,
+  "target_architecture": "aarch64",
+  "os": "macos"
+}
+```
+
+#### 3. `POST /v1/ocr/predict`
+
+**cURL Request**:
+```bash
+curl -s -F "image=@assets/examples/00.jpg" http://localhost:8000/v1/ocr/predict
+```
+
+**JSON Response Payload**:
+```json
+{
+  "text": "．．．",
+  "confidence": 0.985,
+  "duration_ms": 4.20
+}
+```
+
+#### 4. `POST /v1/ocr/eval_panel`
+
+**cURL Request**:
+```bash
+curl -s -F "image=@assets/examples/00.jpg" http://localhost:8000/v1/ocr/eval_panel
+```
+
+**JSON Response Payload**:
+```json
+{
+  "selected_text": "．．．",
+  "confidence": 0.985,
+  "is_validated": true,
+  "candidates_count": 1
+}
 ```
 
 ---
 
-## Command-Line Interface (CLI)
+## 4. Command-Line Interface (`manga-ocr-cli`)
+
+Located in [`crates/manga-ocr-cli`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-cli).
 
 ```bash
-manga_ocr [READ_FROM] [WRITE_TO] [OPTIONS]
+manga-ocr --image <PATH_TO_IMAGE> [FLAGS]
 ```
 
-Monitors clipboard (`read_from="clipboard"`) or target directories for newly created images. Uses native `watchdog` filesystem event observers for instant triggers.
+### CLI Arguments & Options
+
+```text
+Usage: manga-ocr --image <IMAGE> [--force-cpu]
+
+Options:
+  -i, --image <IMAGE>      Path to input image file
+      --force-cpu          Force CPU execution provider [default: false]
+  -h, --help               Print help information
+  -V, --version            Print version information
+```
+
+### CLI Invocation Example
+
+```bash
+cargo run --release -p manga-ocr-cli -- --image assets/examples/00.jpg
+```
+
+---
+
+## 5. Docker Container Deployment
+
+The multi-stage release `Dockerfile` builds a lightweight Debian bookworm-slim container running `manga-ocr-runtime`:
+
+```dockerfile
+# Build image
+docker build -t manga-ocr-runtime:v0.2.0 .
+
+# Run container
+docker run -d -p 8000:8000 --name manga-runtime manga-ocr-runtime:v0.2.0
+```
