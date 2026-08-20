@@ -375,6 +375,61 @@ $$Y_{\text{start}}^{(t)} = t \cdot W \cdot (1 - \delta), \quad Y_{\text{end}}^{(
 
 ---
 
+### 3.6 Stylized Sound Effect (*Onomatopoeia*) Grammar Prior Bypass
+
+For stylized background sound effect text crops (`ゴゴゴ`, `ズバァン`):
+- **Problem**: Non-standard visual typography and perspective warps break natural Japanese language model priors.
+- **Solution**: Implement a dynamic language model prior bypass mode. When vision feature patch variance indicates text-art fusion, beam search decoder weighting reduces BERT language model priors ($\lambda_{\text{LM}} \to 0$), prioritizing visual patch logit similarity over grammatical likelihood.
+
+---
+
+### 3.7 *Tate-chū-yoko* (Hybrid Vertical/Horizontal) Spatial Alignment
+
+For vertical text lines (`writing-mode: vertical-rl`) embedding horizontal ASCII digits or words ("2026年", "OK!"):
+- **Problem**: Vertical patch embeddings misalign on horizontal character clusters.
+- **Solution**: Dynamic 2D spatial feature mapping detects horizontal character bounding clusters embedded in vertical blocks and applies a $90^\circ$ feature patch spatial rotation prior to Vision Encoder ingestion.
+
+---
+
+### 3.8 2-Level Topological Panel Reading Order Graph
+
+For full-page manga layout reading order sorting:
+
+```mermaid
+flowchart TD
+    PAGE[Full Page Image] --> P_SEG[Level 1: Panel Contour Boundary Segmentation]
+    P_SEG --> P_SORT[Sort Panels: Right-to-Left, Top-to-Bottom]
+    P_SORT --> B_BOUND[Level 2: Panel-Bounded Speech Bubble Extraction]
+    B_BOUND --> B_SORT[Sort Bubbles within Panel: Right-to-Left, Top-to-Bottom]
+    B_SORT --> OUT[Topologically Ordered Text Crop Queue]
+```
+
+---
+
+### 3.9 Dual Engine Profile PDP Quality Escalation
+
+Achieves high throughput and maximum accuracy using Polymorphic Decision Protocol (PDP) candidate evaluation:
+
+```mermaid
+flowchart TD
+    CROP[Manga Text Crop] --> NANO[8MB Nano Engine < 5ms Execution]
+    NANO --> CONF{Confidence S >= 0.70?}
+    CONF -- Yes (Fast Path) --> POST[Furigana FSM & Full-Width Post-Processor]
+    CONF -- No (Escalate) --> BASE[430MB Base ONNX Model Evaluation]
+    BASE --> POST
+    POST --> RES[Final OcrResult & Telemetry]
+```
+
+---
+
+### 3.10 Empirical Research Findings & Strategic Innovations Summary
+
+1. **Autoregressive Confidence Score Calibration**: Geometric mean formulation $S = \exp(\frac{1}{N}\sum \ln P_i)$ yields calibrated quality scores for every crop.
+2. **Attention Loop Truncation**: Rolling logit entropy checks ($H_k < 0.15$) terminate degenerate repeating token loops on long crops ($>100$ chars).
+3. **Zero-Copy PyO3 FFI**: Direct `ndarray` pixel buffer passing across the Python/Rust boundary without intermediate serialization.
+
+---
+
 ## 4. Master Systems Comparison Matrix
 
 | Performance / Engineering Dimension | Legacy PyTorch (`manga-ocr`) | Intermediate Python ONNX | Production Master (`manga-ocr-rust`) |

@@ -43,8 +43,7 @@
 - [x] **Intent & Evidence Project Engine (IEPE)**: Documented qualification trace, ticket-first discipline, and assertion-checked gates (`docs/iepe_integration.md`).
 - [x] **Agent, Skill & Script Methods**: Documented agent orchestration, `.agents/skills` taxonomy, and `scripts/gen-llms.py` (`docs/agent_and_skill_methods.md`).
 - [x] **Reference MangaOCR Benchmark Analysis**: Analyzed PaddleOCR/TrOCR reference project and 8MB model target (`docs/reference_mangaocr_learnings.md`).
-- [x] **Theoretical & Conceptual Domain Solutions**: Solved Furigana, Tate-chū-yoko, Sound Effects, aspect-ratio resampling, loop truncation, and panel hierarchy (`docs/conceptual_gaps_and_solutions.md`).
-- [x] **Master Architecture & Systems Specification**: Compiled canonical master technical specification (`docs/MASTER_ARCHITECTURE_SPECIFICATION.md`).
+- [x] **Master Architecture & Systems Specification**: Compiled canonical master technical specification incorporating all domain solutions (Furigana, Tate-chū-yoko, Sound Effects, aspect-ratio resampling, loop truncation, panel hierarchy, dual 8MB/430MB PDP escalation) (`docs/MASTER_ARCHITECTURE_SPECIFICATION.md`).
 
 ---
 

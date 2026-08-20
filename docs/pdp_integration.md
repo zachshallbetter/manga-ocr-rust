@@ -32,20 +32,24 @@ flowchart LR
 ```
 
 ### Phase 1: Panel Formation & ACS Consensus Discounting
+
 - Forms an evaluation panel consisting of heterogeneous engines (`manga-ocr-base` PyTorch, `MangaOcrOnnx`, and fallback OCR engines).
 - Applies two-axis **ACS Discounting**:
   - **Input Provenance Discount ($\alpha$)**: Discounts confidence based on image resolution, contrast noise, and crop degradation.
   - **Vendor Dependence Discount ($\beta$)**: Discounts agreement between models sharing common architecture or training datasets.
 
 ### Phase 2: Adversarial Pressure Probing & Flip Classification
+
 - Tests model stability under small input perturbations (e.g. minor crop shifts, contrast adjustments, or character candidate probing).
 - Classifies response changes into explicit categories (*Robust Retention*, *Sycophantic Flip*, *Evidence-Driven Flip*).
 
 ### Phase 3: Single-Window Commitment
+
 - Freezes candidate weights and confidence scores before exposing outputs.
 - Sets pre-committed invalidation triggers (e.g., if overall sequence confidence $S < 0.70$ or character entropy $> 1.5$, trigger manual human review flag).
 
 ### Phase 4: Brier Score Calibration & Audit
+
 - Tracks empirical calibration over time using the Brier score metric:
   $$BS = \frac{1}{N} \sum_{t=1}^N (f_t - o_t)^2$$
 - Maintains an append-only calibration ledger to verify whether model confidence aligns with actual ground-truth character accuracy.
@@ -68,18 +72,22 @@ manga-ocr-rust/
 ## 3. Concrete Technical & Operational Gains
 
 ### Gain 1: Eliminates Hallucination & High-Confidence Errors
+
 - **Problem**: Standard Vision Encoder-Decoder models can output high-confidence text for blurry background artwork or non-text speech bubbles.
 - **PDP Fix**: ACS provenance discounting lowers the confidence weight of degraded crops, while pre-committed invalidation triggers mark ambiguous predictions for human review instead of silently inserting incorrect Kanji.
 
 ### Gain 2: Multi-Engine Panel Synergies
+
 - **Integration**: Combines predictions from PyTorch `manga-ocr-base`, `MangaOcrOnnx`, and lightweight fallback engines in a unified decision matrix.
 - **Concrete Benefit**: Improves recognition accuracy on difficult vertical text and stylized sound effects (*onomatopoeia*) by **12–18%** without retraining base weights.
 
 ### Gain 3: Statistically Calibrated Confidence Scores
+
 - **Integration**: Uses PDP's persistent Brier score ledger to map raw sequence logit probabilities into true empirical accuracy probabilities.
 - **Concrete Benefit**: A reported confidence score of `0.95` means the output is guaranteed to be correct **95% of the time** across benchmark evaluations.
 
 ### Gain 4: Auditable & Falsifiable Decision Ledger
+
 - **Integration**: Every OCR decision, confidence score, panel vote, and invalidation trigger is written to an append-only event log.
 - **Concrete Benefit**: Complete post-hoc auditability for automated manga translation pipelines, bulk archiving, and dictionary lookups.
 
