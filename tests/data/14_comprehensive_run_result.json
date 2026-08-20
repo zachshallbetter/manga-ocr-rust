@@ -1,0 +1,300 @@
+{
+  "input_file": "tests/data/images/14.jpg",
+  "image_dimensions": {
+    "width": 650,
+    "height": 1024,
+    "size_bytes": 227449
+  },
+  "content_type": "color_manga_cover_art",
+  "title_info": {
+    "series": "DRAGON QUEST SERIES SEVEN",
+    "volume": 1,
+    "japanese_title": "ドラゴンクエスト エデンの戦士たち",
+    "english_title": "Dragon Quest VII: Warriors of Eden",
+    "author": "堀井雄二",
+    "artist": "藤原カムイ"
+  },
+  "recognized_text": "堀井雄二 藤原カムイ ドラゴンクエスト エデンの戦士たち",
+  "ocr_result": {
+    "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/ocr_result.json",
+    "text": "堀井雄二 藤原カムイ ドラゴンクエスト エデンの戦士たち",
+    "confidence": 0.9850,
+    "token_probabilities": [0.99, 0.985, 0.988, 0.982],
+    "metadata": {
+      "duration_ms": 14.2,
+      "model_name": "kha-white/manga-ocr-base",
+      "engine_type": "BaseInt8Onnx"
+    }
+  },
+  "pdp_decision": {
+    "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/pdp_decision.json",
+    "selected_text": "堀井雄二 藤原カムイ ドラゴンクエスト エデンの戦士たち",
+    "confidence": 0.9850,
+    "is_validated": true,
+    "candidates": [
+      {
+        "engine_type": "BaseInt8Onnx",
+        "text": "堀井雄二 藤原カムイ ドラゴンクエスト エデンの戦士たち",
+        "raw_confidence": 0.9850,
+        "acs_score": 0.9900
+      }
+    ]
+  },
+  "page_result": {
+    "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/page_result.json",
+    "page_id": "a1234567-e89b-12d3-a456-426614174014",
+    "page_number": 14,
+    "panels": [
+      {
+        "id": "b1234567-e89b-12d3-a456-426614174014",
+        "reading_order": 1,
+        "bounds": [0.0, 0.0, 650.0, 1024.0],
+        "bubbles": [
+          {
+            "id": "c1234567-e89b-12d3-a456-426614174014_author",
+            "reading_order": 1,
+            "bounds": [85.0, 110.0, 100.0, 200.0],
+            "text": "堀井雄二",
+            "confidence": 0.9850
+          },
+          {
+            "id": "c1234567-e89b-12d3-a456-426614174014_artist",
+            "reading_order": 2,
+            "bounds": [205.0, 110.0, 105.0, 330.0],
+            "text": "藤原カムイ",
+            "confidence": 0.9850
+          },
+          {
+            "id": "c1234567-e89b-12d3-a456-426614174014_title",
+            "reading_order": 3,
+            "bounds": [70.0, 770.0, 560.0, 100.0],
+            "text": "ドラゴンクエスト エデンの戦士たち",
+            "confidence": 0.9880
+          }
+        ]
+      }
+    ]
+  },
+  "localized_text_objects": [
+    {
+      "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/localized_text_object.json",
+      "id": "c1234567-e89b-12d3-a456-426614174014_author",
+      "panelId": "b1234567-e89b-12d3-a456-426614174014",
+      "containerId": "d1234567-e89b-12d3-a456-426614174014_1",
+      "placementMode": "title-overlay",
+      "role": "author-credit",
+      "logicalOrder": 1,
+      "source": {
+        "language": "ja",
+        "raw": "堀井雄二",
+        "normalized": "堀井雄二",
+        "reading": "堀[ほり]井[い]雄[ゆう]二[じ]",
+        "writing": {
+          "mode": "vertical-rl",
+          "characterDirection": "top-to-bottom"
+        }
+      },
+      "translation": {
+        "language": "en",
+        "literal": "Yuji Horii",
+        "localized": "Supervisor: Yuji Horii",
+        "displayText": "Supervisor: Yuji Horii"
+      },
+      "geometry": {
+        "bounds": {
+          "preferred": {
+            "px": { "x": 85.0, "y": 110.0, "width": 100.0, "height": 200.0 },
+            "normalized": { "x": 0.1308, "y": 0.1074, "width": 0.1538, "height": 0.1953 }
+          }
+        },
+        "transform": {
+          "position": { "x": 0.0, "y": 0.0 },
+          "rotation": 0.0,
+          "scale": { "x": 1.0, "y": 1.0 },
+          "anchor": "top-left"
+        }
+      },
+      "layout": {
+        "writingMode": "horizontal-tb",
+        "textAlign": "left",
+        "verticalAlign": "top",
+        "flow": "wrap"
+      },
+      "typography": {
+        "font": { "family": "Impact", "fallback": ["sans-serif"] },
+        "fontSize": 16.0,
+        "lineHeight": 1.2
+      }
+    },
+    {
+      "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/localized_text_object.json",
+      "id": "c1234567-e89b-12d3-a456-426614174014_artist",
+      "panelId": "b1234567-e89b-12d3-a456-426614174014",
+      "containerId": "d1234567-e89b-12d3-a456-426614174014_2",
+      "placementMode": "title-overlay",
+      "role": "artist-credit",
+      "logicalOrder": 2,
+      "source": {
+        "language": "ja",
+        "raw": "藤原カムイ",
+        "normalized": "藤原カムイ",
+        "reading": "藤[ふじ]原[わら]カムイ",
+        "writing": {
+          "mode": "vertical-rl",
+          "characterDirection": "top-to-bottom"
+        }
+      },
+      "translation": {
+        "language": "en",
+        "literal": "Kamui Fujiwara",
+        "localized": "Art: Kamui Fujiwara",
+        "displayText": "Art: Kamui Fujiwara"
+      },
+      "geometry": {
+        "bounds": {
+          "preferred": {
+            "px": { "x": 205.0, "y": 110.0, "width": 105.0, "height": 330.0 },
+            "normalized": { "x": 0.3154, "y": 0.1074, "width": 0.1615, "height": 0.3223 }
+          }
+        },
+        "transform": {
+          "position": { "x": 0.0, "y": 0.0 },
+          "rotation": 0.0,
+          "scale": { "x": 1.0, "y": 1.0 },
+          "anchor": "top-left"
+        }
+      },
+      "layout": {
+        "writingMode": "horizontal-tb",
+        "textAlign": "left",
+        "verticalAlign": "top",
+        "flow": "wrap"
+      },
+      "typography": {
+        "font": { "family": "Impact", "fallback": ["sans-serif"] },
+        "fontSize": 16.0,
+        "lineHeight": 1.2
+      }
+    },
+    {
+      "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/localized_text_object.json",
+      "id": "c1234567-e89b-12d3-a456-426614174014_title",
+      "panelId": "b1234567-e89b-12d3-a456-426614174014",
+      "containerId": "d1234567-e89b-12d3-a456-426614174014_3",
+      "placementMode": "title-banner",
+      "role": "series-title",
+      "logicalOrder": 3,
+      "source": {
+        "language": "ja",
+        "raw": "ドラゴンクエスト エデンの戦士たち",
+        "normalized": "ドラゴンクエスト エデンの戦士たち",
+        "reading": "ドラゴンクエスト エデンの戦[せん]士[し]たち",
+        "writing": {
+          "mode": "horizontal-tb",
+          "characterDirection": "left-to-right"
+        }
+      },
+      "translation": {
+        "language": "en",
+        "literal": "Dragon Quest: Warriors of Eden",
+        "localized": "Dragon Quest VII: Warriors of Eden",
+        "displayText": "Dragon Quest VII: Warriors of Eden"
+      },
+      "geometry": {
+        "bounds": {
+          "preferred": {
+            "px": { "x": 70.0, "y": 770.0, "width": 560.0, "height": 100.0 },
+            "normalized": { "x": 0.1077, "y": 0.7520, "width": 0.8615, "height": 0.0977 }
+          }
+        },
+        "transform": {
+          "position": { "x": 0.0, "y": 0.0 },
+          "rotation": 0.0,
+          "scale": { "x": 1.0, "y": 1.0 },
+          "anchor": "top-left"
+        }
+      },
+      "layout": {
+        "writingMode": "horizontal-tb",
+        "textAlign": "center",
+        "verticalAlign": "middle",
+        "flow": "wrap"
+      },
+      "typography": {
+        "font": { "family": "DragonQuestLogo", "fallback": ["Impact", "sans-serif"] },
+        "fontSize": 28.0,
+        "lineHeight": 1.1
+      }
+    }
+  ],
+  "comic_scene_graph": {
+    "$schema": "https://raw.githubusercontent.com/zachshallbetter/comic-ocr-rust/main/schemas/comic_scene_graph.json",
+    "id": "e1234567-e89b-12d3-a456-426614174014",
+    "metadata": {
+      "title": "Dragon Quest VII: Warriors of Eden",
+      "series": "DRAGON QUEST SERIES SEVEN",
+      "volume": "1",
+      "chapter": "1",
+      "sourceLanguage": "ja",
+      "targetLanguage": "en"
+    },
+    "reading": {
+      "binding": "right",
+      "pageDirection": "rtl",
+      "defaultPanelFlow": {
+        "strategy": "manga-rtl",
+        "primaryAxis": "vertical",
+        "secondaryAxis": "rtl"
+      },
+      "sourceWriting": {
+        "mode": "vertical-rl",
+        "characterDirection": "top-to-bottom",
+        "columnDirection": "right-to-left"
+      },
+      "targetWriting": {
+        "mode": "horizontal-tb",
+        "characterDirection": "left-to-right",
+        "lineDirection": "top-to-bottom"
+      }
+    },
+    "pages": [
+      {
+        "id": "a1234567-e89b-12d3-a456-426614174014",
+        "pageNumber": 14,
+        "source": {
+          "imageId": "f1234567-e89b-12d3-a456-426614174014",
+          "filename": "14.jpg",
+          "nativeSize": { "width": 650.0, "height": 1024.0 },
+          "dpi": 300.0,
+          "colorSpace": "rgb"
+        },
+        "bands": [
+          {
+            "id": "g1234567-e89b-12d3-a456-426614174014",
+            "order": 1,
+            "direction": "rtl",
+            "panelIds": ["b1234567-e89b-12d3-a456-426614174014"]
+          }
+        ],
+        "panels": [
+          {
+            "id": "b1234567-e89b-12d3-a456-426614174014",
+            "logicalOrder": 1,
+            "frame": {
+              "bounds": {
+                "px": { "x": 0.0, "y": 0.0, "width": 650.0, "height": 1024.0 },
+                "normalized": { "x": 0.0, "y": 0.0, "width": 1.0, "height": 1.0 }
+              },
+              "borderWidth": 1.0
+            },
+            "zIndex": 1
+          }
+        ],
+        "containers": [],
+        "text_regions": [],
+        "art_regions": [],
+        "masks": []
+      }
+    ]
+  }
+}
