@@ -1,0 +1,11 @@
+{
+  "filename": "14.jpg",
+  "path": "tests/data/images/14.jpg",
+  "dimensions": {
+    "width": 650,
+    "height": 1024
+  },
+  "recognized_text": "...",
+  "confidence": 0.985,
+  "duration_ms": 493.2
+}
