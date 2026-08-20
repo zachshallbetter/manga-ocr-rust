@@ -29,6 +29,7 @@ flowchart TD
 
 - [**Master TODO & Implementation Ledger**](docs/TODO.md): Full audit checklist tracking completed tasks and next phase implementation goals.
 - [**Master Architecture & Systems Specification**](docs/MASTER_ARCHITECTURE_SPECIFICATION.md): Master technical specification unifying system evolution, Cargo workspace blueprints, PDP/IEPE doctrines, RRSA integration, theoretical solutions, findings, and migration roadmap.
+- [**JSON Schema Suite & Comprehensive Output**](docs/json_schema_suite.md): Documentation for the 5 JSON schema contracts and comprehensive execution results for `12.jpg`.
 - [**API & Microservice Reference**](docs/api.md): Detailed reference for Rust library traits, JSON schemas, Reflective Runtime REST endpoints, CLI parameters, and Docker deployment.
 - [**Architecture & Doctrine Synthesis**](docs/architecture_and_doctrine.md): Unifies Reflective Rust (RRSA), Polymorphic Decision Protocol (PDP), IEPE intent-evidence loops, Draft Smarter scoring/probabilities, and Titan production Rust runtime blueprints.
 - [**Reflective Rust Integration & Gains**](docs/reflective_rust_integration.md): Deep dive into RRSA integration, zero-overhead PyO3 FFI, compile-time tensor shape checks, and CSG model self-description.

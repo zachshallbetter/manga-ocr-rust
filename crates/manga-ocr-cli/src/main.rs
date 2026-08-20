@@ -18,6 +18,10 @@ struct Cli {
     #[arg(long, default_value_t = false)]
     extract_furigana: bool,
 
+    /// Output full JSON conforming to schema
+    #[arg(long, default_value_t = false)]
+    json: bool,
+
     /// Force CPU execution
     #[arg(long, default_value_t = false)]
     force_cpu: bool,
@@ -34,9 +38,14 @@ fn main() -> anyhow::Result<()> {
 
     let result = engine.predict(&img)?;
 
-    println!("Recognized Text: {}", result.text);
-    println!("Confidence: {:.4}", result.confidence);
-    println!("Duration: {:.2} ms", result.metadata.duration_ms);
+    if cli.json {
+        let json_str = serde_json::to_string_pretty(&result)?;
+        println!("{}", json_str);
+    } else {
+        println!("Recognized Text: {}", result.text);
+        println!("Confidence: {:.4}", result.confidence);
+        println!("Duration: {:.2} ms", result.metadata.duration_ms);
+    }
 
     Ok(())
 }

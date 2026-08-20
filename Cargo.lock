@@ -928,6 +928,7 @@ dependencies = [
  "image",
  "manga-ocr-core",
  "manga-ocr-ort",
+ "serde_json",
  "tracing",
  "tracing-subscriber",
 ]
