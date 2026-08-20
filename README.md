@@ -1,16 +1,16 @@
 # Manga OCR Rust
 
-High-performance, zero-cost, multi-crate Rust workspace for optical character recognition of Japanese manga.
+High-performance, zero-cost, multi-crate Rust workspace for optical character recognition of Japanese and English manga/comics.
 
 ---
 
-## Workspace Crates
+## Workspace Crates & Packages
 
-- **[`manga-ocr-core`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-core)**: Pure Rust domain primitives, tokenization, full-width text normalization, and `OcrEngine` trait definitions.
-- **[`manga-ocr-pdp`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-pdp)**: Polymorphic Decision Protocol engine, multi-engine panel evaluation, ACS consensus discounting, and Brier calibration.
-- **[`manga-ocr-ort`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-ort)**: C++ ONNX Runtime bindings (`ort`) managing tensor memory, image resizing, and greedy/beam search token decoding (<120MB RAM).
-- **[`manga-ocr-cli`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-cli)**: Fast, native command-line binary (`manga-ocr`).
-- **[`manga-ocr-server`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-server)**: High-throughput Tokio/Axum REST and gRPC microservice.
+- **[`manga-ocr-core`](crates/manga-ocr-core)**: Pure Rust domain primitives, tokenization, multi-language post-processing (`Japanese`, `English`), Furigana FSM, multi-tile resampling, and `OcrEngine` trait definitions.
+- **[`manga-ocr-pdp`](crates/manga-ocr-pdp)**: Polymorphic Decision Protocol engine, multi-engine panel evaluation, ACS consensus discounting, and Brier calibration.
+- **[`manga-ocr-ort`](crates/manga-ocr-ort)**: C++ ONNX Runtime bindings (`ort`) managing tensor memory, image resizing, token entropy calculation ($H_k$), and loop truncation (<120MB RAM).
+- **[`manga-ocr-cli`](crates/manga-ocr-cli)**: Fast, native command-line binary (`manga-ocr`).
+- **[`manga-ocr-runtime`](crates/manga-ocr-runtime)**: High-throughput Tokio/Axum REST Reflective Runtime microservice.
 
 ---
 
@@ -31,24 +31,25 @@ cargo test --workspace
 ### Run CLI
 
 ```bash
-cargo run --release -p manga-ocr-cli -- --image assets/examples/00.jpg
+cargo run --release -p manga-ocr-cli -- --image assets/examples/00.jpg --extract-furigana
 ```
 
-### Run Tokio/Axum Microservice
+### Run Tokio/Axum Reflective Runtime
 
 ```bash
-cargo run --release -p manga-ocr-server
+cargo run --release -p manga-ocr-runtime
 ```
 
 ---
 
 ## Documentation
 
-Full architectural specifications, research doctrines, and API contracts are available in [`docs/`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs):
+Full architectural specifications, research doctrines, and API contracts:
 
-- [**Master Architecture & Systems Specification**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/MASTER_ARCHITECTURE_SPECIFICATION.md)
-- [**Architecture & Doctrine Synthesis**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/architecture_and_doctrine.md)
-- [**Reflective Rust Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/reflective_rust_integration.md)
-- [**PDP Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/pdp_integration.md)
-- [**IEPE Governance Integration & Gains**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/iepe_integration.md)
-- [**Theoretical & Conceptual Solutions**](file:///Users/zachshallbetter/Projects/manga-ocr-rust/docs/conceptual_gaps_and_solutions.md)
+- [**Master Architecture & Systems Specification**](docs/MASTER_ARCHITECTURE_SPECIFICATION.md)
+- [**API & Schema Reference**](docs/api.md)
+- [**Architecture & Doctrine Synthesis**](docs/architecture_and_doctrine.md)
+- [**Reflective Rust Integration & Gains**](docs/reflective_rust_integration.md)
+- [**PDP Integration & Gains**](docs/pdp_integration.md)
+- [**IEPE Governance Integration & Gains**](docs/iepe_integration.md)
+- [**Master TODO & Implementation Ledger**](docs/TODO.md)

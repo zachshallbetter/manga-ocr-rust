@@ -1,12 +1,12 @@
 # Manga OCR Training Pipeline
 
-This document describes the model architecture, dataset construction, data augmentation, evaluation metrics, and training procedure in [`manga_ocr_dev/training/`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training).
+This document describes the model architecture, dataset construction, data augmentation, evaluation metrics, and training procedure in [`manga_ocr_dev/training/`](manga_ocr_dev/training).
 
 ---
 
 ## Model Architecture
 
-Manga OCR is built using Hugging Face's [`VisionEncoderDecoderModel`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/get_model.py#L6) framework, which pairs a Vision Transformer encoder with a Causal Language Model decoder.
+Manga OCR is built using Hugging Face's [`VisionEncoderDecoderModel`](manga_ocr_dev/training/get_model.py#L6) framework, which pairs a Vision Transformer encoder with a Causal Language Model decoder.
 
 ```mermaid
 graph LR
@@ -17,7 +17,7 @@ graph LR
     BeamSearch --> TextTokens["Japanese Token Sequence"]
 ```
 
-### Components ([`get_model.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/get_model.py))
+### Components ([`get_model.py`](manga_ocr_dev/training/get_model.py))
 
 1. **Vision Encoder**:
    - Default checkpoint: `facebook/deit-tiny-patch16-224` (or ViT base).
@@ -26,7 +26,7 @@ graph LR
    - Default checkpoint: `cl-tohoku/bert-base-japanese-char-v2`.
    - Configured with `is_decoder=True` and `add_cross_attention=True`.
    - Supports trimming decoder depth via `num_decoder_layers` (e.g. taking the top 2 layers to reduce model latency).
-3. **Custom Processor ([`TrOCRProcessorCustom`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/get_model.py#L13-L20))**:
+3. **Custom Processor ([`TrOCRProcessorCustom`](manga_ocr_dev/training/get_model.py#L13-L20))**:
    - Wraps `AutoFeatureExtractor` (vision) and `AutoTokenizer` (text) while bypassing base class type restriction checks.
 4. **Generation & Beam Search Config**:
    - `decoder_start_token_id`: `cls_token_id`
@@ -38,19 +38,19 @@ graph LR
 
 ---
 
-## Dataset & Augmentations ([`dataset.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/dataset.py))
+## Dataset & Augmentations ([`dataset.py`](manga_ocr_dev/training/dataset.py))
 
 `MangaDataset` dynamically concatenates synthetic dataset packages with real manga line annotations from the Manga109-s dataset.
 
 ### Package Selection Strategy
-- **Synthetic Data**: Reads metadata from [`<DATA_SYNTHETIC_ROOT>/meta/*.csv`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/dataset.py#L34).
-- **Manga109-s Data**: Reads image crop annotations from [`<MANGA109_ROOT>/data.csv`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/dataset.py#L48).
+- **Synthetic Data**: Reads metadata from [`<DATA_SYNTHETIC_ROOT>/meta/*.csv`](manga_ocr_dev/training/dataset.py#L34).
+- **Manga109-s Data**: Reads image crop annotations from [`<MANGA109_ROOT>/data.csv`](manga_ocr_dev/training/dataset.py#L48).
 - **Package Holdout**: Package `0000` is excluded from training (`skip_packages=[0]`) and reserved exclusively for evaluation/validation.
 
 ### Label Masking
 Labels are padded to `max_target_length` (default 300). Padding tokens are assigned token ID `-100` so that PyTorch cross-entropy loss functions ignore them during backpropagation.
 
-### Albumentations Pipeline ([`get_transforms`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/dataset.py#L118-L161))
+### Albumentations Pipeline ([`get_transforms`](manga_ocr_dev/training/dataset.py#L118-L161))
 
 Training images are randomly transformed to ensure robustness against scan artifacts, blur, compression, and tilt:
 
@@ -62,7 +62,7 @@ Training images are randomly transformed to ensure robustness against scan artif
 
 ---
 
-## Evaluation Metrics ([`metrics.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/metrics.py))
+## Evaluation Metrics ([`metrics.py`](manga_ocr_dev/training/metrics.py))
 
 During training evaluation, model output token IDs are batch-decoded and evaluated using:
 1. **Character Error Rate (CER)**: Computed via the Hugging Face `cer` metric.
@@ -70,7 +70,7 @@ During training evaluation, model output token IDs are batch-decoded and evaluat
 
 ---
 
-## Training Runner ([`train.py`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/manga_ocr_dev/training/train.py))
+## Training Runner ([`train.py`](manga_ocr_dev/training/train.py))
 
 Training is orchestrated using `transformers.Seq2SeqTrainer` with Weights & Biases (`wandb`) experiment tracking.
 

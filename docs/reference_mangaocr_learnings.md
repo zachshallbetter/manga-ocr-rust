@@ -1,6 +1,6 @@
 # Reference MangaOCR Analysis & Architectural Learnings
 
-This document summarizes key takeaways, model footprint optimizations, dataset insights, and edge-case mitigations derived from analyzing the reference project [`_Reference-Projects/MangaOCR`](file:///Users/zachshallbetter/Projects/_Reference-Projects/MangaOCR).
+This document summarizes key takeaways, model footprint optimizations, dataset insights, and edge-case mitigations derived from analyzing the reference project [`_Reference-Projects/MangaOCR`](reference/MangaOCR).
 
 ---
 

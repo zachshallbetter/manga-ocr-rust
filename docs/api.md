@@ -6,7 +6,7 @@ This document provides the canonical specification for the library traits, data 
 
 ## 1. Rust Core Library API (`manga-ocr-core`)
 
-Located in [`crates/manga-ocr-core`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-core).
+Located in [`crates/manga-ocr-core`](crates/manga-ocr-core).
 
 ### `OcrEngine` Trait Definition
 
@@ -94,7 +94,7 @@ assert_eq!(post_process("テスト 123"), "テスト　１２３");
 
 ## 2. Polymorphic Decision Protocol API (`manga-ocr-pdp`)
 
-Located in [`crates/manga-ocr-pdp`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-pdp).
+Located in [`crates/manga-ocr-pdp`](crates/manga-ocr-pdp).
 
 ### `PanelEvaluator` Struct
 
@@ -126,7 +126,7 @@ pub struct PdpDecision {
 
 ## 3. Reflective Runtime Service REST API (`manga-ocr-runtime`)
 
-Located in [`crates/manga-ocr-runtime`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-runtime).
+Located in [`crates/manga-ocr-runtime`](crates/manga-ocr-runtime).
 
 ### Environment Configuration Schema (`RuntimeConfig`)
 
@@ -232,7 +232,7 @@ curl -s -F "image=@assets/examples/00.jpg" http://localhost:8000/v1/ocr/eval_pan
 
 ## 4. Command-Line Interface (`manga-ocr-cli`)
 
-Located in [`crates/manga-ocr-cli`](file:///Users/zachshallbetter/Projects/manga-ocr-rust/crates/manga-ocr-cli).
+Located in [`crates/manga-ocr-cli`](crates/manga-ocr-cli).
 
 ```bash
 manga-ocr --image <PATH_TO_IMAGE> [FLAGS]
